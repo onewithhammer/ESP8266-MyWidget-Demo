@@ -39,7 +39,6 @@ SOFTWARE.
 #define MQTT_PORT 1883
 #define START_WITH_CLEAN_SESSION   true
 
-
 const char* ssid = "YOUR-SSID";
 const char* password = "YOUR-SSID-PASSWORD";
 // Your MQTT host here
@@ -394,7 +393,7 @@ void initWeb() {
         if (request->hasParam("counter", true)) {
             message = request->getParam("counter", true)->value();
             i = atoi(String(message).c_str());
-            if(i>0 && i<9999)
+            if(i>0 && i<=9999)
               counter = i;
         } 
         request->send(200, "text/plain", "POST: Counter set to: " + String(i));
@@ -565,4 +564,6 @@ void onMqttError(uint8_t e,uint32_t info) {
 void loop() {
   MDNS.update();
   ArduinoOTA.handle();
-}
+} // loop()
+
+// End of File
