@@ -39,7 +39,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 - [PangolinMQTT](https://github.com/philbowles/PangolinMQTT) - Asynchronous MQTT client library
 
 
-# Features
+## Features
 
 ## mDNS - multicast DNS
 
@@ -198,7 +198,7 @@ Enter the following into browser ``http://mywidget.local``
 		}}  
 
 - HTTP POST COUNTER
-- ''http://[your device IP]/counter + query string (name/value pairs) in Request Body'' - Sets the internal counter to Request counter value.
+- ''http://[your device IP]/counter + query string (name/value pairs) in Request Body'' - Sets the internal counter to Request counter value. Range 1 to 9999
 	- Name/Value Pair: counter=XXXX
 		- Returns:
 			- "POST: Counter set to: XXXX"
@@ -252,17 +252,29 @@ The LittleFS implementation for the ESP8266 supports filenames of up to 31 chara
 
 OTA (Over The Air) Updates allows you to update the firmware on the device without being connected via a USB cable.  The updates can occur after the device is connected to WIFI.  The initial firmware installation requires using a USB cable but all subsequent updates can be perform remotely over WIFI.
 
-# Notes
+
+## Test & Debug
+
+I used a few different tools to test and debug.  The source code was mainly debugged using Serial.print() messages and the Serial Monitor (Tools-Serial Monitor) in the Arduino IDE.
+
+I also use the web developer tools (console & network) debug the JavaScript and web services requests / responses.
+
+To test and debug the HTTP GET and POST messages, I used [POSTMAN](https://www.postman.com/)
+
+To test and debug MQTT, I used Mosquitto and Node-Red.
+
+
+## Notes
 
 I orginally tried to send / receive JSON messages using the popular Arduino JSON Library [ArduinoJson](https://github.com/bblanchon/ArduinoJson) but I couldn't make it stable.  I kept getting exceptions happening in various places, so I removed using JSON and ArduinoJson references. I converted all Web Services messages to send/receive text messages.  I also converted files to save as text files (cfg.txt) instead of JSON.
  - The Web Services messages text using fields delimited with colons ":".
  - The config files are also text delimited with colons ":".
  Later I went back and added an HTTP GET with JSON response example without any JSON libraries.
 
-# References
+## References
 
 - [LittleFS](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html)
 - [BootStrap](https://getbootstrap.com/docs/3.4/) - BootStrap(3.4.1) - HTML, CSS, and JS framework
 
-# Credits
+## Credits
  - [ESPixelStick](https://github.com/forkineye/ESPixelStick)
