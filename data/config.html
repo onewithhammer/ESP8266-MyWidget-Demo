@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MyWidget ESP8266 Demo">
+    <meta name="author" content="Tony Keith">
+    
+    <title>MyWidget ESP8266 Demo - Config Page</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+  </head>
+
+  <body>
+
+    <div class="container">
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MyWidget ESP8266 Demo</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="index.html">Home</a></li>
+              <li class="active"><a href="#">Config</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Light Output</div>
+              <div class="panel-body">
+                <center><strong>State1:</strong> <span id="state1">Updating...</span></center>
+                <p><center><button id="toggle" class="btn btn-primary">Toggle</button></center></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Device Configuration</div>
+              <div class="panel-body">
+                <form class="form-horizontal">
+                  <div class="form-group">
+                    <label for="channels" class="col-sm-5 control-label">Channels:</label>
+                    <div class="col-sm-6">
+                      <input type="number" class="form-control" id="channels" min="1" max="512">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="ports" class="col-sm-5 control-label">Ports:</label>
+                    <div class="col-sm-6">
+                      <input type="number" class="form-control" id="ports" min="1" max="16">
+                    </div>
+                  </div> 
+                  <div class="form-group">
+                    <label for="user1" class="col-sm-5 control-label">User Data 1:</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="user1" minlength="0" maxlength="16">
+                    </div>
+                  </div> 
+                  <div class="form-group">
+                    <label for="user2" class="col-sm-5 control-label">User Data 2:</label>
+                    <div class="col-sm-6">
+                      <input type="text" class="form-control" id="user2" minlength="0" maxlength="16">
+                    </div>
+                  </div> 
+                </form>
+                <p><center><button id="configSave" class="btn btn-primary">Save Changes</button></center></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Device Uptime</div>
+              <div class="panel-body">
+                <center><span id="uptime">Updating...</span></center>
+              </div>            
+          </div>
+        </div>
+      </div> <!-- /container -->
+    </div> <!-- /container -->
+
+    <script src="js/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script>
+var wsOutputQueue = [];
+var wsBusy = false;
+var wsOutputQueueTimer = null;
+var UptimeRequestTimer = null;
+var ws = null;
+
+window.addEventListener('load', onLoad);
+function onLoad(event) {
+    // lets get started
+    wsConnect();
+    initButton();
+}
+function initButton() {
+  document.getElementById('toggle').addEventListener('click', toggle);
+  document.getElementById('configSave').addEventListener('click', configSave);
+}
+function toggle() {
+  wsEnqueue("cmd:set:toggle");
+}
+function configSave() {
+  console.info("configSave");
+
+  wsEnqueue("cmd:set:config:" 
+    + document.getElementById('channels').value + ":" 
+    + document.getElementById('ports').value + ":"
+    + document.getElementById('user1').value + ":"
+    + document.getElementById('user2').value);               
+}
+function RequestUptime()
+{
+    // is the timer running?
+    if (null === UptimeRequestTimer)
+    {
+        // timer runs forever
+        UptimeRequestTimer = setTimeout(function ()
+        {
+            clearTimeout(UptimeRequestTimer);
+            UptimeRequestTimer = null;
+
+            RequestUptime();
+
+        }, 1000);
+    } // end timer was not running
+
+    // ask for uptime
+    wsEnqueue("cmd:get:uptime");
+
+} // RequestUptime
+
+function ParseParameter(name)
+{
+    return (location.search.split(name + '=')[1] || '').split('&')[0];
+}
+
+// On websocket connect
+function wsConnect()
+{
+    if ('WebSocket' in window)
+    {
+        if (!(target = ParseParameter('target')))
+        {
+            target = document.location.host;
+        }
+
+        console.info("wsConnect - target: " + target);
+
+        // Open a new web socket and set the binary type
+        ws = new WebSocket('ws://' + target + '/ws');
+        ws.binaryType = 'arraybuffer';
+
+        // When connection is opened, get core data.
+        // Module data is loaded in module change / load callbacks
+        ws.onopen = function ()
+        {
+            console.info("ws.onopen");
+
+            // throw away any old messages
+            console.info("ws.onopen: Flush and Halt");
+            wsFlushAndHaltTheOutputQueue();
+
+            // show we are ready to start processing the output queue
+            console.info("ws.onopen: Turn On Sending");
+            wsReadyToSend();
+            // ask for uptime
+            wsEnqueue("cmd:get:status");
+            wsEnqueue("cmd:get:config");
+            RequestUptime(); // start uptime loop
+        };
+
+        ws.onmessage = function (event) {
+            // console.info("ws.onmessage: Start");
+            if (typeof event.data === "string") {
+
+              console.info("ws.onmessage: Data: " + event.data);
+
+              const splits = event.data.split(":");
+
+              if((splits[0] =="cmd") && (splits[1] == "get")) {
+                console.info("get");
+
+                if (splits[2] == "uptime") {
+                  // cmd:get:update
+                  console.info("uptime: " + splits[3]);
+
+                  // uptime is reported in milliseconds
+                  var date = new Date(parseInt(splits[3]));
+                  var str = '';
+                  //    var hoursPerDay = 24;
+                  //    var MinutesPerHour = 60;
+                  //    var secondsPerMinute = 60;
+                  //    var millisecondsPerSecond = 1000;
+                  //    var MillisecondsPerDay = millisecondsPerSecond * secondsPerMinute * MinutesPerHour * hoursPerDay; = 86400000
+                  str += Math.floor(date.getTime() / 86400000) + " days, ";
+                  str += ("0" + date.getUTCHours()).slice(-2) + ":";
+                  str += ("0" + date.getUTCMinutes()).slice(-2) + ":";
+                  str += ("0" + date.getUTCSeconds()).slice(-2);
+
+                  document.getElementById('uptime').innerHTML = str;
+                } else if (splits[2] == "status") {
+                  // cmd:get:status:state1
+                  console.info("state1: " + splits[3]);
+
+                  if (splits[3] == "1") {
+                    state1 = "ON";
+                  } else {
+                    state1 = "OFF";
+                  }
+                  document.getElementById('state1').innerHTML = state1;
+                } else if (splits[2] == "config") {
+                  // cmd:get:config:channels:ports:user1:user2
+
+                  console.info("channels: " + splits[3]);
+                  console.info("ports: " + splits[4]);
+                  console.info("user1: " + splits[5]);
+                  console.info("user2: " + splits[6]);
+
+                  document.getElementById('channels').value = splits[3];
+                  document.getElementById('ports').value = splits[4];
+                  document.getElementById('user1').value = splits[5];
+                  document.getElementById('user2').value = splits[6];
+                } else {
+                  console.info("Unknown get action");
+                }
+              } else if((splits[0] =="cmd") && (splits[1] == "set")) {
+
+                if (splits[2] == "toggle") {
+                  // cmd:get:toggle:state1
+                  console.info("state1: " + splits[3]);
+
+                  if (splits[3] == "1") {
+                    state1 = "ON";
+                  } else {
+                    state1 = "OFF";
+                  }
+                  document.getElementById('state1').innerHTML = state1;
+                } else if (splits[2] == "config") {
+                  // cmd:set:config:channels:ports:user1:user2
+
+                  console.info("channels: " + splits[3]);
+                  console.info("ports: " + splits[4]);
+                  console.info("user1: " + splits[5]);
+                  console.info("user2: " + splits[6]);
+
+                  document.getElementById('channels').value = splits[3];
+                  document.getElementById('ports').value = splits[4];
+                  document.getElementById('user1').value = splits[5];
+                  document.getElementById('user2').value = splits[6];
+                } else {
+                  console.info("Unknown set action");
+                }
+              } else {
+                console.info("Unknown cmd");              
+              }
+            } else {
+              console.info("Stream Data");
+            }
+
+            // show we are ready to send
+            //console.info("ws.onmessage: Ask To Send Next Msg");
+            wsReadyToSend();
+
+            //console.info("ws.onmessage: Done");
+        }; // onmessage
+
+        ws.onclose = function ()
+        {
+            wsFlushAndHaltTheOutputQueue();
+            wsConnect();
+        };
+    }
+    else
+    {
+        alert('WebSockets is NOT supported by your Browser! You will need to upgrade your browser.');
+    }
+}
+// Websocket message queuer
+function wsEnqueue(message)
+{
+    // only send messages if the WS interface is up
+    if (ws.readyState !== 1)
+    {
+        console.info("WS is down. Discarding msg: " + message);
+    }
+    else
+    {
+        wsOutputQueue.push(message);
+        wsProcessOutputQueue();
+
+    } // WS is up
+} // wsEnqueue
+
+function wsFlushAndHaltTheOutputQueue()
+{
+    // do we have a send timer running?
+    if (null !== wsOutputQueueTimer)
+    {
+        // stop the timer
+        clearTimeout(wsOutputQueueTimer);
+        wsOutputQueueTimer = null;
+    }
+
+    // show we are ready NOT to send the next message
+    wsBusy = true;
+
+    // empty the output queue
+    while (wsOutputQueue.length > 0)
+    {
+        //get the next message from the queue.
+        var message = wsOutputQueue.shift();
+        console.info("Discarding msg: " + message);
+    }
+} // wsFlushAndHaltTheOutputQueue
+
+function wsProcessOutputQueue()
+{
+    //console.log('wsProcessOutputQueue');
+
+    // only send messages if the WS interface is up
+    if (ws.readyState !== 1)
+    {
+        // The interface is NOT up. Flush the queue
+        console.log('wsProcessOutputQueue: WS Down. Flush');
+        wsFlushAndHaltTheOutputQueue();
+    }
+
+    //check if we are currently waiting for a response
+    else if (wsBusy === true)
+    {
+        console.log('wsProcessOutputQueue: Busy');
+    } // cant send yet
+
+    else if (wsOutputQueue.length > 0)
+    {
+        //set the wsBusy flag indicating that we are waiting for a response
+        wsBusy = true;
+
+        //get the next message from the queue.
+        var OutputMessage = wsOutputQueue.shift();
+
+        // set WaitForResponseTimeMS to clear flag and try next message if response
+        // isn't recieved.
+        var WaitForResponseTimeMS = 5000; // 5 seconds
+
+
+        // set up a new timer
+        wsOutputQueueTimer = setTimeout(function ()
+        {
+            // console.info('WS Send Timer expired');
+
+            // Move on to the next message
+            wsReadyToSend();
+
+        }, WaitForResponseTimeMS);
+
+        //send it.
+        console.info('WS sending ' + OutputMessage);
+        ws.send(OutputMessage);
+
+    } // message available to send
+
+} // wsProcessOutputQueue
+
+function wsReadyToSend()
+{
+    // is a timer running?
+    if (null !== wsOutputQueueTimer)
+    {
+        // stop the timer
+        clearTimeout(wsOutputQueueTimer);
+        wsOutputQueueTimer = null;
+    }
+
+    // show we are ready to send the next message
+    wsBusy = false;
+
+    //send next message
+    wsProcessOutputQueue();
+
+} // wsReadyToSend
+
+</script>
+
+  </body>
+</html>
