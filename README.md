@@ -268,15 +268,19 @@ To test and debug MQTT, I used Mosquitto and Node-Red.
 
 ## Notes
 
-I orginally tried to send / receive JSON messages using the popular Arduino JSON Library [ArduinoJson](https://github.com/bblanchon/ArduinoJson) but I couldn't make it stable.  I kept getting exceptions happening in various places, so I removed using JSON and ArduinoJson references. I converted all Web Services messages to send/receive text messages.  I also converted files to save as text files (cfg.txt) instead of JSON.
+I orginally tried to send / receive JSON messages using the popular Arduino JSON Library [ArduinoJson](https://github.com/bblanchon/ArduinoJson) but I couldn't make it stable.  I kept getting exceptions happening in various places, while stress testing (calling GET heap repeatively), so I eventually removed the ArduinoJson library and references. I converted all Web Services messages to send/receive text messages.  I also converted files to save as text files (cfg.txt) instead of JSON.
+
+Later I went back and added an HTTP GET with JSON response example without any JSON libraries.
  - The Web Services messages text using fields delimited with colons ":".
  - The config files are also text delimited with colons ":".
- Later I went back and added an HTTP GET with JSON response example without any JSON libraries.
+
 
 ## References
 
-- [LittleFS](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html)
+- [LittleFS](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html) - Little File System
 - [BootStrap](https://getbootstrap.com/docs/3.4/) - BootStrap(3.4.1) - HTML, CSS, and JS framework
+- [jQuery](https://jquery.com/) - JS library
+- [Random Nerd Tutorials](https://randomnerdtutorials.com/) - Lots of good information on 8266 here
 
 ## Credits
- - [ESPixelStick](https://github.com/forkineye/ESPixelStick)
+ - Lots of great information and the webservices JS script in config.html is from [ESPixelStick](https://github.com/forkineye/ESPixelStick)
