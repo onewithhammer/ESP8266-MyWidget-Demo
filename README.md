@@ -17,13 +17,13 @@ This demo includes:
 - Auto Updating Web Site (Web Services using JS)
 - Plus much more...
 
-# History
+## History
 
-I purchased several [ESPixelSticks](https://www.amazon.com/dp/B072XT1V77/ref=cm_sw_em_r_mt_dp_-RscGb7XH5PQ3) from Amazon for my sychronized LED Christmas light display. After using the ESPixelSticks, I became interested in how the ESP8266 worked and how to program it. So I began to review the [ESPixelStick](https://github.com/forkineye/ESPixelStick) source code and the specifications of the ESP8266. It didn't take long to find out there is an add-on for the Arduino IDE that allows you to program the ESP8266 using the Arduino IDE and its programming language. A few years back, I had created some simple projects using Arduino UNO R3 and programmed using the Arduino IDE. Since I was already familar with the Arduino IDE, I started by modifying some of the simple examples and playing with different libraries. I wasn't very interested in the low level hardware or interfacing to a sensor/module but I was more interested in a UI and different ways to communicate with this device. I didn't have a particular project in mind so I created MyWidget.
+I purchased several [ESPixelSticks](https://www.amazon.com/dp/B072XT1V77/ref=cm_sw_em_r_mt_dp_-RscGb7XH5PQ3) from Amazon for my sychronized LED Christmas light display. After using the ESPixelSticks, I became interested in how the ESP8266 worked and how to program it. So I began to review the [ESPixelStick](https://github.com/forkineye/ESPixelStick) source code and the specifications of the ESP8266. It didn't take long to find out there is an add-on for the Arduino IDE that allows you to program the ESP8266 using the Arduino IDE and its programming language. A few years back, I had created some simple projects using Arduino UNO R3 and programmed using the Arduino IDE. Since I was already familar with the Arduino IDE, I started by modifying some of the simple examples and playing with different libraries. I wasn't very interested in the low level hardware or interfacing to a sensor/module but I was more interested in an interactive UI and different ways to communicate with this device. I didn't have a particular project in mind so I created MyWidget; A project template for ESP8266.
 
 MyWidget can be used as a learning tool or as a template for starting a new ESP8266 project. I tried to incorporate many UI and APIs that may be useful for a ESP8266 project with a web interface.
 
-# Requirements
+## Requirements
 
 Along with the Arduino IDE, you'll need the following software to build this project:
 
@@ -40,6 +40,8 @@ Extract the folder in each of these zip files and place it in the "library" fold
 
 
 ## Features
+
+---
 
 ## mDNS - multicast DNS
 
