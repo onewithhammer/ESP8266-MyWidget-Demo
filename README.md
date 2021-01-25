@@ -5,6 +5,7 @@ It contains many of the components to build a ESP8266 project.
 
 This demo includes:
 - ESP8266 Development
+- mDNS - multicast DNS (mywidget.local)
 - Asynchronous Web Server (ESPAsyncWebServer) 
 - Asynchronous Web Services (ESPAsyncWebServer)
 - Asynchronous MQTT (PangolinMQTT) 
@@ -45,7 +46,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 
 ## mDNS - multicast DNS
 
-Mulicast DNS allows you to use a local DNS name (mywidget.local) to access the web interface.  There is no need to know the IP address. mDNS will resolve the IP address for you.
+Mulicast DNS allows you to use a local DNS name (mywidget.local) to access the web interface.  There is no need to know the local IP address obtained from the WIFI connection. mDNS will resolve the IP address for you.
 
 Enter the following into browser ``http://mywidget.local``
 
@@ -113,7 +114,7 @@ Enter the following into browser ``http://mywidget.local``
 
 - Asynchronous
 - HTTP GET HEAP
-	- ''http://[your device IP]/heap''
+	- ''http://mywidget.local/heap''
 
 	- Heap
 		- Name/Value Pair: N/A
@@ -125,10 +126,10 @@ Enter the following into browser ``http://mywidget.local``
 	- `freeHeap=38616`
 	
 - HTTP GET STATUS 
-- ''http://[your device IP]/status + query string (name/value pairs) in URL'' - Returns status about network, filesystem, signal, heap and chip info in text format. Name value pairs are delimited using colon ":".  Name and value fields are delimited using a equal "=" sign.
+- ''http://mywidget.local/status + query string (name/value pairs) in URL'' - Returns status about network, filesystem, signal, heap and chip info in text format. Name value pairs are delimited using colon ":".  Name and value fields are delimited using a equal "=" sign.
 
 - HTTP GET STATUS-JSON 
-- ''http://[your device IP]/status-json + query string (name/value pairs) in URL'' - Returns status about network, filesystem, signal, heap and chip info.
+- ''http://mywidget.local/status-json + query string (name/value pairs) in URL'' - Returns status about network, filesystem, signal, heap and chip info.
 
 	- Network
 		- Name/Value Pair: network=true
@@ -167,12 +168,12 @@ Enter the following into browser ``http://mywidget.local``
 			- flashChipRealSize=[Flash Chip Real Size]
 			
 	- Example Request:
-	- `http://192.168.0.20/status?network=true&fs=true&signal=true&heap=true&chipInfo=true`
+	- `http://mywidget.local/status?network=true&fs=true&signal=true&heap=true&chipInfo=true`
 	- Example Response (TEXT):
 	- `:network=true:ssid=MyWifi:hostname=mywidget:ip=192.168.0.20:gateway=192.168.0.1:netmask=255.255.255.0:signal=true:strength=-68:chipInfo=true:chipId=3016621:flashChipId=1458392:flashChipSize=4194304:flashChipRealSize=4194304:heap=true:freeHeap=38216:fs=true:totalBytes=1024000:usedBytes=327680`
 
 	- Example Request:
-	- `http://192.168.0.20/status-json?network=true&fs=true&signal=true&heap=true&chipInfo=true`
+	- `http://mywidget.local/status-json?network=true&fs=true&signal=true&heap=true&chipInfo=true`
 	- Example Response (JSON):
 
     	}"network": {  
@@ -200,13 +201,13 @@ Enter the following into browser ``http://mywidget.local``
 		}}  
 
 - HTTP POST COUNTER
-- ''http://[your device IP]/counter + query string (name/value pairs) in Request Body'' - Sets the internal counter to Request counter value. Range 1 to 9999
+- ''http://mywidget.local/counter + query string (name/value pairs) in Request Body'' - Sets the internal counter to Request counter value. Range 1 to 9999
 	- Name/Value Pair: counter=XXXX
 		- Returns:
 			- "POST: Counter set to: XXXX"
 			
 	- Example Request:
-	- `POST http://192.168.0.20/counter'
+	- `POST http://mywidget.local/counter'
 	- `form data in Request Body - counter=109`
 
 	- Example Response (TEXT):
@@ -228,7 +229,7 @@ This project is implmented using the LittleFS file system.
 
 If you modify a file locally, you must upload to device using [Arduino ESP8266 LittleFS Filesystem Uploader](https://github.com/esp8266/arduino-esp8266fs-plugin)
 
-The LittleFS implementation for the ESP8266 supports filenames of up to 31 characters + terminating zero (i.e. char filename[32]), and as many subdirectories as space permits.
+The LittleFS implementation for the ESP8266 supports filenames of up to 31 characters + terminating zero (i.e. char filename[32]), and as many subdirectories as space permits. Keep your filenames + directories names short!
 
 ## MQTT
 
