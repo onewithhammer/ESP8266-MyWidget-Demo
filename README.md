@@ -121,7 +121,7 @@ Enter the following into browser ``http://mywidget.local``
 		- Returns:
 			- freeHeap=[Free Heap]
 	- Example Request:
-	- `http://192.168.0.20/heap`
+	- `http://mywidget.local/heap`
 	- Example Response:
 	- `freeHeap=38616`
 	
@@ -176,7 +176,7 @@ Enter the following into browser ``http://mywidget.local``
 	- `http://mywidget.local/status-json?network=true&fs=true&signal=true&heap=true&chipInfo=true`
 	- Example Response (JSON):
 
-    	}"network": {  
+    	{"network": {  
         "ssid": "MyWifi",  
 		"hostname": "mywidget",  
 		"ip": "192.168.0.20",  
@@ -281,6 +281,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 - [LittleFS](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html) - Little File System
 - [BootStrap](https://getbootstrap.com/docs/3.4/) - BootStrap(3.4.1) - HTML, CSS, and JS framework
 - [jQuery](https://jquery.com/) - JS library
+- [OTA with Arduino IDE](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#arduino-ide)
 - [Random Nerd Tutorials](https://randomnerdtutorials.com/) - Lots of good information on 8266 here
 
 ## Credits
