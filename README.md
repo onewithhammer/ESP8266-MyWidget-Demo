@@ -269,7 +269,9 @@ The 0.5s timer uses a timer1_write multipler of 2,500,000
 The calculations for the timer multipler:
 
 80 Mhz / 16 = 5 Mhz
+
 5 Mhz or 0.0000002 uS
+
 0.0000002 uS * 2500000 = 0.5s
 
 ## Test & Debug
