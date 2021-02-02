@@ -16,6 +16,7 @@ This demo includes:
 - OTA (Over the Air) Updates
 - HTTP API Supports HTTP GET/POST
 - Auto Updating Web Site (Web Services using JS)
+- Interrupt Timer (Flash Onboard LED)
 - Plus much more...
 
 ## History
@@ -88,8 +89,8 @@ Enter the following into browser ``http://mywidget.local``
 
 - Asynchronous
 - Supports serving html, css, js files
-- Set default to index.html
-- Serves two pages (index.html & config.html)
+- Sets default to index.html
+- Serves two embedded web pages (index.html & config.html)
 - File not found message
 
 ## User Interface
@@ -231,7 +232,7 @@ If you modify a file locally, you must upload to device using [Arduino ESP8266 L
 
 The LittleFS implementation for the ESP8266 supports filenames of up to 31 characters + terminating zero (i.e. char filename[32]), and as many subdirectories as space permits. Keep your filenames + directories names short!
 
-## MQTT
+## MQTT (Message Queuing Telemetry Transport) - IoT messaging
 
 - Subscribe
 	- esp32/get/uptime - Request uptime
@@ -255,14 +256,29 @@ The LittleFS implementation for the ESP8266 supports filenames of up to 31 chara
 
 OTA (Over The Air) Updates allows you to update the firmware on the device without being connected via a USB cable.  The updates can occur after the device is connected to WIFI.  The initial firmware installation requires using a USB cable but all subsequent updates can be perform remotely over WIFI.
 
+## Interrupt 
+
+This project has a interrupt timer used to flash the onboard LED.
+
+timer1 is attached to an interrupt handler; ledTimerISR().
+
+timer1 is enabled with the TIM_DIV16 timer divider, TIM_EDGE trigger and TIM_SINGLE for single shot
+
+The 0.5s timer uses a timer1_write multipler of 2,500,000
+
+The calculations for the timer multipler:
+
+80 Mhz / 16 = 5 Mhz
+5 Mhz or 0.0000002 uS
+0.0000002 uS * 2500000 = 0.5s
 
 ## Test & Debug
 
-I used a few different tools to test and debug.  The source code was mainly debugged using Serial.print() messages and the Serial Monitor (Tools-Serial Monitor) in the Arduino IDE.
+I used a few different tools to test and debug.  The source code was mainly debugged using Serial.print() messages and the Serial Monitor (Tools->Serial Monitor) in the Arduino IDE.
 
-I also use the web developer tools (console & network) debug the JavaScript and web services requests / responses.
+I also used the Firefox web developer tools (console & network) debug the JavaScript and web services requests / responses.
 
-To test and debug the HTTP GET and POST messages, I used [POSTMAN](https://www.postman.com/)
+To test and debug the HTTP GET and POST requests/response messages, I used [POSTMAN](https://www.postman.com/)
 
 To test and debug MQTT, I used Mosquitto and Node-Red.
 

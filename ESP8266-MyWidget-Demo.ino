@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2020 Tony Keith
+Copyright (c) 2021 Tony Keith
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ SOFTWARE.
 
 const char* ssid = "YOUR-SSID";
 const char* password = "YOUR-SSID-PASSWORD";
-// Your MQTT host here
+// Your MQTT broker address here
 #define MQTT_HOST IPAddress(192, 168, 0, 100)
 
 const char* host = "mywidget";
@@ -50,6 +50,13 @@ const char* host = "mywidget";
 bool ledState1 = 0;
 // global counter
 int counter = 1;
+
+// interrupt handler
+void ICACHE_RAM_ATTR ledTimerISR(){
+    digitalWrite(LED_BUILTIN,!(digitalRead(LED_BUILTIN)));  // Toggle LED Pin
+    // set timer for 0.5s
+    timer1_write(250000); 
+} // ledTimerISR()
 
 FSInfo fs_info;
 
@@ -252,6 +259,9 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
   }
 } // onEvent()
 
+//
+// Based on args, return status of network, signal, chipInfo, heap, filesystem (fs) in JSON format
+//
 void handleStatusJson(AsyncWebServerRequest* request)
 {
   String json = "{";
@@ -318,6 +328,8 @@ void handleStatus(AsyncWebServerRequest* request)
 {
   String buf;
   Serial.println("GET status");
+
+  // not necessary - just additional info
   int params = request->params();
   for(int i=0;i<params;i++) {
     AsyncWebParameter* p = request->getParam(i);
@@ -384,12 +396,13 @@ void initWeb() {
     handleStatusJson(request); 
   });
 
-  // post counter
+  // post counter (TEXT response)
   webServer.on("/counter", HTTP_POST, [](AsyncWebServerRequest *request){
         String message;
         Serial.println("POST:counter");
         int i=0;
-        
+
+        // counter must be in request
         if (request->hasParam("counter", true)) {
             message = request->getParam("counter", true)->value();
             i = atoi(String(message).c_str());
@@ -403,6 +416,7 @@ void initWeb() {
         request->send(404, "text/plain", "Page not found");
   });
 
+  // default to index page
   webServer.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 
   webServer.begin();
@@ -428,7 +442,7 @@ void onWifiConnect(const WiFiEventStationModeGotIP& event) {
   Serial.println(WiFi.localIP());
   if (MDNS.begin(host)) {
     Serial.printf("Open http://%s", host);
-    Serial.println(".local to open this Demo");
+    Serial.println(".local to open ESP8266-MyWidget-Demo");
   } else {
     Serial.println("Error setting up MDNS responder!");
   }
@@ -505,6 +519,22 @@ void setup() {
   while (dir.next()) {
         Serial.printf("%s - %d bytes\n", dir.fileName().c_str(), dir.fileSize());
   }
+  
+  // Initialize the LED_BUILTIN pin as an output
+  pinMode(LED_BUILTIN, OUTPUT);
+  
+  // Initialize Timer every 0.5s
+  timer1_attachInterrupt(ledTimerISR);
+  timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
+  
+  // The timers of the RTC are not affected by the CPU speed setting. 
+  // A given timer divisor produces the same rate of change of the RTC timer's COUNT register with both speed settings.
+
+  // TIM_DIV16 80 Mhz / 16 = 5 Mhz
+  // 5 Mhz or 0.0000002 uS
+  // 0.0000002 uS * 2,500,000 = 0.5s
+  timer1_write(250000);
+  
 } // setup()
 
 void onMqttDisconnect(int8_t reason) {
