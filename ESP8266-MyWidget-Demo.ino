@@ -39,8 +39,9 @@ SOFTWARE.
 #define MQTT_PORT 1883
 #define START_WITH_CLEAN_SESSION   true
 
-const char* ssid = "YOUR-SSID";
-const char* password = "YOUR-SSID-PASSWORD";
+//const char* ssid = "YOUR-SSID";
+//const char* password = "YOUR-SSID-PASSWORD";
+
 // Your MQTT broker address here
 #define MQTT_HOST IPAddress(192, 168, 0, 100)
 
@@ -55,7 +56,7 @@ int counter = 1;
 void ICACHE_RAM_ATTR ledTimerISR(){
     digitalWrite(LED_BUILTIN,!(digitalRead(LED_BUILTIN)));  // Toggle LED Pin
     // set timer for 0.5s
-    timer1_write(250000); 
+    timer1_write(2500000); 
 } // ledTimerISR()
 
 FSInfo fs_info;
@@ -533,7 +534,7 @@ void setup() {
   // TIM_DIV16 80 Mhz / 16 = 5 Mhz
   // 5 Mhz or 0.0000002 uS
   // 0.0000002 uS * 2,500,000 = 0.5s
-  timer1_write(250000);
+  timer1_write(2500000);
   
 } // setup()
 
