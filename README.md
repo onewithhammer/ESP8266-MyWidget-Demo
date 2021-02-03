@@ -21,7 +21,7 @@ This demo includes:
 
 ## History
 
-I purchased several [ESPixelSticks](https://www.amazon.com/dp/B072XT1V77/ref=cm_sw_em_r_mt_dp_-RscGb7XH5PQ3) from Amazon for my sychronized LED Christmas light display. After using the ESPixelSticks, I became interested in how the ESP8266 worked and how to program it. So I began to review the [ESPixelStick](https://github.com/forkineye/ESPixelStick) source code and the specifications of the ESP8266. It didn't take long to find out there is an add-on for the Arduino IDE that allows you to program the ESP8266 using the Arduino IDE and its programming language. A few years back, I had created some simple projects using Arduino UNO R3 and programmed using the Arduino IDE. Since I was already familar with the Arduino IDE, I started by modifying some of the simple examples and playing with different libraries. I wasn't very interested in the low level hardware or interfacing to a sensor/module but I was more interested in an interactive UI and different ways to communicate with this device. I didn't have a particular project in mind so I created MyWidget; A project template for ESP8266.
+I purchased several [ESPixelSticks](https://www.amazon.com/dp/B072XT1V77/ref=cm_sw_em_r_mt_dp_-RscGb7XH5PQ3) from Amazon for my synchronized LED Christmas light display. After using the ESPixelSticks, I became interested in how the ESP8266 worked and how to program it. So I began to review the [ESPixelStick](https://github.com/forkineye/ESPixelStick) source code and the specifications of the ESP8266. It didn't take long to find out there is an add-on for the Arduino IDE that allows you to program the ESP8266 using the Arduino IDE and its programming language. A few years back, I had created some simple projects using Arduino UNO R3 and programmed using the Arduino IDE. Since I was already familiar with the Arduino IDE, I started by modifying some of the simple examples and playing with different libraries. I wasn't very interested in the low level hardware or interfacing to a sensor/module but I was more interested in an interactive UI and different ways to communicate with this device. I didn't have a particular project in mind so I created MyWidget; A project template for ESP8266.
 
 MyWidget can be used as a learning tool or as a template for starting a new ESP8266 project. I tried to incorporate many UI and APIs that may be useful for a ESP8266 project with a web interface.
 
@@ -91,7 +91,7 @@ Enter the following into browser ``http://mywidget.local``
 - Supports serving html, css, js files
 - Sets default to index.html
 - Serves two embedded web pages (index.html & config.html)
-- File not found message
+- Supports file not found message
 
 ## User Interface
 
@@ -108,29 +108,33 @@ Enter the following into browser ``http://mywidget.local``
 	- Uptime format is: "N days, HH:MM:SS"
 - All messages to/from config page use Web Services
 - Web Services has queue implemented if server is busy
-- Bootstrap (3.4.1)
-- JQuery (3.5.1)
+- Implemented using Bootstrap (3.4.1)
+- Implemented using JQuery (3.5.1)
 
 ## HTTP API - GET & POST
 
 - Asynchronous
 - HTTP GET HEAP
-	- ''http://mywidget.local/heap''
+	- URL: ''http://mywidget.local/heap''
 
-	- Heap
+	- Request:
 		- Name/Value Pair: N/A
-		- Returns:
-			- freeHeap=[Free Heap]
+	- Response:
+		- freeHeap=[Free Heap]
 	- Example Request:
-	- `http://mywidget.local/heap`
+		- `http://mywidget.local/heap`
 	- Example Response:
-	- `freeHeap=38616`
+		- `freeHeap=38616`
 	
 - HTTP GET STATUS 
-- ''http://mywidget.local/status + query string (name/value pairs) in URL'' - Returns status about network, filesystem, signal, heap and chip info in text format. Name value pairs are delimited using colon ":".  Name and value fields are delimited using a equal "=" sign.
+	- URL: ''http://mywidget.local/status + query string (name/value pairs)''
+	- Returns status about network, filesystem, signal, heap and chip info in text format.
+	- Name value pairs are delimited using colon ":".
+	- Name and value fields are delimited using a equal "=" sign.
 
 - HTTP GET STATUS-JSON 
-- ''http://mywidget.local/status-json + query string (name/value pairs) in URL'' - Returns status about network, filesystem, signal, heap and chip info.
+- URL: ''http://mywidget.local/status-json + query string (name/value pairs)''
+- Returns status about network, filesystem, signal, heap and chip info.
 
 	- Network
 		- Name/Value Pair: network=true
@@ -256,7 +260,7 @@ The LittleFS implementation for the ESP8266 supports filenames of up to 31 chara
 
 OTA (Over The Air) Updates allows you to update the firmware on the device without being connected via a USB cable.  The updates can occur after the device is connected to WIFI.  The initial firmware installation requires using a USB cable but all subsequent updates can be perform remotely over WIFI.
 
-## Interrupt 
+## Interrupt Handler
 
 This project has a interrupt timer used to flash the onboard LED.
 
@@ -291,7 +295,7 @@ I orginally tried to send / receive JSON messages using the popular Arduino JSON
 
 Later I went back and added an HTTP GET with JSON response example without any JSON libraries.
  - The Web Services messages text using fields delimited with colons ":".
- - The config files are also text delimited with colons ":".
+ - The config files are also text using fields delimited with colons ":".
 
 
 ## References
