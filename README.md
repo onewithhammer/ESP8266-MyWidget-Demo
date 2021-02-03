@@ -47,9 +47,11 @@ Extract the folder in each of these zip files and place it in the "library" fold
 
 ## mDNS - multicast DNS
 
-Mulicast DNS allows you to use a local DNS name (mywidget.local) to access the web interface.  There is no need to know the local IP address obtained from the WIFI connection. mDNS will resolve the IP address for you.
+- Mulicast DNS allows you to use a local DNS name (mywidget.local) to access the web interface.
+- There is no need to know the local IP address obtained from the WIFI connection.
+- mDNS will resolve the IP address for you.
 
-Enter the following into browser ``http://mywidget.local``
+- Enter the following into browser ``http://mywidget.local``
 
 ## Web Services 
 
@@ -115,8 +117,8 @@ Enter the following into browser ``http://mywidget.local``
 
 - Asynchronous
 - HTTP GET HEAP
-	- URL: ''http://mywidget.local/heap''
-
+	- URL: `http://mywidget.local/heap`
+	- Returns free heap space
 	- Request:
 		- Name/Value Pair: N/A
 	- Response:
@@ -127,20 +129,21 @@ Enter the following into browser ``http://mywidget.local``
 		- `freeHeap=38616`
 	
 - HTTP GET STATUS 
-	- URL: ''http://mywidget.local/status + query string (name/value pairs)''
+	- URL: `http://mywidget.local/status + query string (name/value pairs)`
 	- Returns status about network, filesystem, signal, heap and chip info in text format.
 		- Name value pairs are delimited using colon ":".
 		- Name and value fields are delimited using a equal "=" sign.
 
 - HTTP GET STATUS-JSON 
-	- URL: ''http://mywidget.local/status-json + query string (name/value pairs)''
+	- URL: `http://mywidget.local/status-json + query string (name/value pairs)`
 	- Returns status about network, filesystem, signal, heap and chip info.
 
-	- Query string (name/value pairs) options
+	- Query string (name/value pairs) parameters:
 
 	- Network
-		- Name/Value Pair: network=true
-		- Returns:
+		- Request:
+			- Name/Value Pair: network=true
+		- Response::
 			- ssid=[SSID]
 			- hostname=[Hostname]
 			- ip=[IP Address]
@@ -148,24 +151,28 @@ Enter the following into browser ``http://mywidget.local``
 			- netmask=[Netmask]
 		
 	- Filesystem
-		- Name/Value Pair: fs=true
-		- Returns:
+		- Request:
+			- Name/Value Pair: fs=true
+		- Response::
 			- totalBytes=[Total Bytes]
 			- usedBytes=[Used Bytes]
 
 	- Signal
-		- Name/Value Pair: signal=true
-		- Returns:
+		- Request:
+			- Name/Value Pair: signal=true
+		- Response::
 			- strength=[Signal Strength]
 
 	- Heap
-		- Name/Value Pair: heap=true			
-		- Returns:
+		- Request:
+			- Name/Value Pair: heap=true			
+		- Response::
 			- freeHeap=[Free Heap]
 
 	- Chip Info
-		- Name/Value Pair: chipInfo=true
-	 	- Returns:
+		- Request:
+			- Name/Value Pair: chipInfo=true
+	 	- Response::
 			- chipId=[Chip ID]
 			- flashChipId=[Flash Chip ID]
 			- flashChipSize=[Flash Chip Size]
@@ -180,7 +187,7 @@ Enter the following into browser ``http://mywidget.local``
 		- `http://mywidget.local/status-json?network=true&fs=true&signal=true&heap=true&chipInfo=true`
 	- Example Response (JSON):
 
-    	{"network": {  
+    	`{"network": {  
         "ssid": "MyWifi",  
 		"hostname": "mywidget",  
 		"ip": "192.168.0.20",  
@@ -202,24 +209,28 @@ Enter the following into browser ``http://mywidget.local``
 		"fs": {  
 		"totalBytes": "1024000",  
 		"usedBytes": "327680"  
-		}}  
+		}}  `
 
 - HTTP POST COUNTER
-- ''http://mywidget.local/counter + query string (name/value pairs) in Request Body'' - Sets the internal counter to Request counter value. Range 1 to 9999
-	- Name/Value Pair: counter=XXXX
-		- Returns:
+- `http://mywidget.local/counter + query string (name/value pairs) in Request Body`
+- Sets the internal counter to Request counter value. Range 1 to 9999
+	- Request:
+		- Name/Value Pair: counter=XXXX
+	- Response:
 			- "POST: Counter set to: XXXX"
 			
 	- Example Request:
-	- `POST http://mywidget.local/counter'
-	- `form data in Request Body - counter=109`
+		- `POST http://mywidget.local/counter'
+		- `form data in Request Body - counter=109`
 
 	- Example Response (TEXT):
-	- `POST: Counter set to: 109`
+		- `POST: Counter set to: 109`
 
 ## File System
 
-This project is implmented using the LittleFS file system.
+This project is implmented using the LittleFS file system.  All data is placed in a 'data' directory.
+
+Here is the directory and files associated with this project.
 
 	data (Directory)`
 		css (Style Sheet Directory)
@@ -236,6 +247,8 @@ If you modify a file locally, you must upload to device using [Arduino ESP8266 L
 The LittleFS implementation for the ESP8266 supports filenames of up to 31 characters + terminating zero (i.e. char filename[32]), and as many subdirectories as space permits. Keep your filenames + directories names short!
 
 ## MQTT (Message Queuing Telemetry Transport) - IoT messaging
+
+MQTT is implemented when a subscribe message is received, a corresponding publish message is sent.  
 
 - Subscribe
 	- esp32/get/uptime - Request uptime
@@ -301,7 +314,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 
 - [LittleFS](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html) - Little File System
 - [BootStrap](https://getbootstrap.com/docs/3.4/) - BootStrap(3.4.1) - HTML, CSS, and JS framework
-- [jQuery](https://jquery.com/) - JS library
+- [jQuery](https://jquery.com/) - JS utility library
 - [OTA with Arduino IDE](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#arduino-ide) - How to setup and config IDE for OTA updates
 - [Random Nerd Tutorials](https://randomnerdtutorials.com/) - Lots of good information on 8266 here
 
