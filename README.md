@@ -129,12 +129,14 @@ Enter the following into browser ``http://mywidget.local``
 - HTTP GET STATUS 
 	- URL: ''http://mywidget.local/status + query string (name/value pairs)''
 	- Returns status about network, filesystem, signal, heap and chip info in text format.
-	- Name value pairs are delimited using colon ":".
-	- Name and value fields are delimited using a equal "=" sign.
+		- Name value pairs are delimited using colon ":".
+		- Name and value fields are delimited using a equal "=" sign.
 
 - HTTP GET STATUS-JSON 
-- URL: ''http://mywidget.local/status-json + query string (name/value pairs)''
-- Returns status about network, filesystem, signal, heap and chip info.
+	- URL: ''http://mywidget.local/status-json + query string (name/value pairs)''
+	- Returns status about network, filesystem, signal, heap and chip info.
+
+	- Query string (name/value pairs) options
 
 	- Network
 		- Name/Value Pair: network=true
@@ -146,20 +148,17 @@ Enter the following into browser ``http://mywidget.local``
 			- netmask=[Netmask]
 		
 	- Filesystem
-	
 		- Name/Value Pair: fs=true
 		- Returns:
 			- totalBytes=[Total Bytes]
 			- usedBytes=[Used Bytes]
 
 	- Signal
-	
 		- Name/Value Pair: signal=true
 		- Returns:
 			- strength=[Signal Strength]
 
 	- Heap
-	
 		- Name/Value Pair: heap=true			
 		- Returns:
 			- freeHeap=[Free Heap]
@@ -173,12 +172,12 @@ Enter the following into browser ``http://mywidget.local``
 			- flashChipRealSize=[Flash Chip Real Size]
 			
 	- Example Request:
-	- `http://mywidget.local/status?network=true&fs=true&signal=true&heap=true&chipInfo=true`
+		- `http://mywidget.local/status?network=true&fs=true&signal=true&heap=true&chipInfo=true`
 	- Example Response (TEXT):
-	- `:network=true:ssid=MyWifi:hostname=mywidget:ip=192.168.0.20:gateway=192.168.0.1:netmask=255.255.255.0:signal=true:strength=-68:chipInfo=true:chipId=3016621:flashChipId=1458392:flashChipSize=4194304:flashChipRealSize=4194304:heap=true:freeHeap=38216:fs=true:totalBytes=1024000:usedBytes=327680`
+		- `:network=true:ssid=MyWifi:hostname=mywidget:ip=192.168.0.20:gateway=192.168.0.1:netmask=255.255.255.0:signal=true:strength=-68:chipInfo=true:chipId=3016621:flashChipId=1458392:flashChipSize=4194304:flashChipRealSize=4194304:heap=true:freeHeap=38216:fs=true:totalBytes=1024000:usedBytes=327680`
 
 	- Example Request:
-	- `http://mywidget.local/status-json?network=true&fs=true&signal=true&heap=true&chipInfo=true`
+		- `http://mywidget.local/status-json?network=true&fs=true&signal=true&heap=true&chipInfo=true`
 	- Example Response (JSON):
 
     	{"network": {  
