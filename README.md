@@ -305,22 +305,17 @@ OTA (Over The Air) Updates allows you to update the firmware on the device witho
 
 This project has a interrupt timer used to flash the onboard LED.
 
-	- timer1 is attached to an interrupt handler; ledTimerISR().
-	- timer1 is enabled with the TIM_DIV16 timer divider, TIM_EDGE trigger and TIM_SINGLE for single shot
-	- The timer uses a timer1_write multipler
-	- The calculations for the timer multipler:
+- timer1 is attached to an interrupt handler; ledTimerISR().
+- timer1 is enabled with the TIM_DIV16 timer divider, TIM_EDGE trigger and TIM_SINGLE for single shot
+- The timer uses a timer1_write multipler
+- The calculations for the timer multipler:
 
-		- 80 Mhz / 16 = 5 Mhz
-
-		- 5 Mhz or 0.0000002 uS
-
-		-0.0000002 uS * 2500000 = 0.5s (SLOW)
-
-		-0.0000002 uS * 1,250,00 = 0.25s = 4 hz (MEDIUM)
-
-		-0.0000002 uS * 625,000 = 0.125s = 8 hz (FAST)
-
-		-0.0000002 uS * 312,500 = 0.0625s = 16 hz (FASTEST)
+	- 80 Mhz / 16 = 5 Mhz
+	- 5 Mhz or 0.0000002 uS
+	- 0.0000002 uS * 2500000 = 0.5s (SLOW)
+	- 0.0000002 uS * 1,250,00 = 0.25s = 4 hz (MEDIUM)
+	- 0.0000002 uS * 625,000 = 0.125s = 8 hz (FAST)
+	- 0.0000002 uS * 312,500 = 0.0625s = 16 hz (FASTEST)
 
 ## Test & Debug
 
