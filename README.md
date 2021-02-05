@@ -63,11 +63,11 @@ Extract the folder in each of these zip files and place it in the "library" fold
 	- All requests and responses are in TEXT format.
    
   - GET ACTIONS
-  
+
   - Uptime - Returns device uptime in milliseconds.
-		- Request: ''cmd:get:uptime''
-		- Response: ''cmd:get:uptime:NNNNNNNN''
-			- where NNNNNNNN is the device uptime in milliseconds
+  	- Request: ''cmd:get:uptime''
+  	- Response: ''cmd:get:uptime:NNNNNNNN''
+  		- where NNNNNNNN is the device uptime in milliseconds
 
    - Status - Returns status of light (0/1)
 		- Request: ''cmd:get:status''
