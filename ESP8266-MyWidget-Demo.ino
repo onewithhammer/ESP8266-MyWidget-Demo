@@ -39,12 +39,19 @@ SOFTWARE.
 #define MQTT_PORT 1883
 #define START_WITH_CLEAN_SESSION   true
 
-//const char* ssid = "YOUR-SSID";
-//const char* password = "YOUR-SSID-PASSWORD";
+
+#define INT_SLOW    2500000
+#define INT_MED     1250000
+#define INT_FAST    625000
+#define INT_FASTEST 312500
+
+const char* ssid = "YOUR-SSID";
+const char* password = "YOUR-SSID-PASSWORD";
 
 // Your MQTT broker address here
 #define MQTT_HOST IPAddress(192, 168, 0, 100)
 
+// host name
 const char* host = "mywidget";
 
 // global LED state
@@ -52,13 +59,20 @@ bool ledState1 = 0;
 // global counter
 int counter = 1;
 
+// interrupt variables
+volatile unsigned int interruptCounter = 0;
+volatile unsigned int interruptSpeed = INT_SLOW;
+
 // interrupt handler
-void ICACHE_RAM_ATTR ledTimerISR(){
+void ICACHE_RAM_ATTR ledTimerISR() {
     digitalWrite(LED_BUILTIN,!(digitalRead(LED_BUILTIN)));  // Toggle LED Pin
-    // set timer for 0.5s
-    timer1_write(2500000); 
+    // set timer
+    timer1_write(interruptSpeed);
+    // inc counter 
+    interruptCounter++;
 } // ledTimerISR()
 
+// file system structure
 FSInfo fs_info;
 
 PangolinMQTT mqttClient;
@@ -100,6 +114,19 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
           } else if (!strcmp("status", token)) {
             // status
             client->text("cmd:get:status:" + String(ledState1));
+           } else if (!strcmp("speed", token)) {
+            String speed;
+            // speed
+            if(interruptSpeed == INT_SLOW)
+              speed = "1";
+            else if(interruptSpeed == INT_MED)
+              speed = "2";
+            else if(interruptSpeed == INT_FAST)
+              speed = "3";
+            else if(interruptSpeed == INT_FASTEST)
+              speed = "4";
+          
+            client->text("cmd:get:speed:" + String(speed));
           } else if (!strcmp("config", token)) {
             // config
             String fileData;
@@ -126,6 +153,21 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
             // toggle
             ledState1 = !ledState1;           
             client->text("cmd:set:toggle:" + String(ledState1));
+          } else if (!strcmp("speed", token)) {          
+            // speed 
+            char *speed = strtok(NULL, ":");
+            Serial.println(speed);
+            if(strlen(speed) == 1) {
+              if(speed[0] == '1')
+                interruptSpeed = INT_SLOW;
+              else if (speed[0] == '2')
+                interruptSpeed = INT_MED;
+              else if (speed[0] == '3')  
+                interruptSpeed = INT_FAST;  
+              else if (speed[0] == '4')  
+                interruptSpeed = INT_FASTEST;
+            }
+            client->text("cmd:set:speed:" + String(speed));
           } else if (!strcmp("config", token)) {
             String(buf);
             // config
@@ -524,7 +566,7 @@ void setup() {
   // Initialize the LED_BUILTIN pin as an output
   pinMode(LED_BUILTIN, OUTPUT);
   
-  // Initialize Timer every 0.5s
+  // Initialize Timer
   timer1_attachInterrupt(ledTimerISR);
   timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
   
@@ -533,8 +575,11 @@ void setup() {
 
   // TIM_DIV16 80 Mhz / 16 = 5 Mhz
   // 5 Mhz or 0.0000002 uS
-  // 0.0000002 uS * 2,500,000 = 0.5s
-  timer1_write(2500000);
+  // 0.0000002 uS * 2,500,000 = 0.5s = 2 hz
+  // 0.0000002 uS * 1,250,00 = 0.25s = 4 hz
+  // 0.0000002 uS * 625,000 = 0.125s = 8 hz
+  // 0.0000002 uS * 312,500 = 0.0625s = 16 hz
+  timer1_write(interruptSpeed);
   
 } // setup()
 

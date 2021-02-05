@@ -1,9 +1,9 @@
-# ESP8266-MyWidget-Demo
+# ESP8266-MyWidget
 
 This project can be used as a learning tool or as a template for starting a new ESP8266 project.
-It contains many of the components to build a ESP8266 project.
+It contains many of the components to build a ESP8266 project with web interface.
 
-This demo includes:
+This project includes:
 - ESP8266 Development
 - mDNS - multicast DNS (mywidget.local)
 - Asynchronous Web Server (ESPAsyncWebServer) 
@@ -16,14 +16,14 @@ This demo includes:
 - OTA (Over the Air) Updates
 - HTTP API Supports HTTP GET/POST
 - Auto Updating Web Site (Web Services using JS)
-- Interrupt Timer (Flash Onboard LED)
+- Multiple Speed Interrupt Timer (Flash Onboard LED)
 - Plus much more...
 
 ## History
 
-I purchased several [ESPixelSticks](https://www.amazon.com/dp/B072XT1V77/ref=cm_sw_em_r_mt_dp_-RscGb7XH5PQ3) from Amazon for my synchronized LED Christmas light display. After using the ESPixelSticks, I became interested in how the ESP8266 worked and how to program it. So I began to review the [ESPixelStick](https://github.com/forkineye/ESPixelStick) source code and the specifications of the ESP8266. It didn't take long to find out there is an add-on for the Arduino IDE that allows you to program the ESP8266 using the Arduino IDE and its programming language. A few years back, I had created some simple projects using Arduino UNO R3 and programmed using the Arduino IDE. Since I was already familiar with the Arduino IDE, I started by modifying some of the simple examples and playing with different libraries. I wasn't very interested in the low level hardware or interfacing to a sensor/module but I was more interested in an interactive UI and different ways to communicate with this device. I didn't have a particular project in mind so I created MyWidget; A project template for ESP8266.
+I purchased several [ESPixelSticks](https://www.amazon.com/dp/B072XT1V77/ref=cm_sw_em_r_mt_dp_-RscGb7XH5PQ3) from Amazon for my synchronized LED Christmas light display. After using the ESPixelSticks, I became interested in how the ESP8266 worked and how to program it. So I began to review the [ESPixelStick](https://github.com/forkineye/ESPixelStick) source code and the specifications of the ESP8266. It didn't take long to find out there is an add-on for the Arduino IDE that allows you to program the ESP8266 using the Arduino IDE and its programming language. A few years back, I had created some simple projects using Arduino UNO R3 and programmed using the Arduino IDE. Since I was already familiar with the Arduino IDE, I started by modifying some of the simple examples and playing with different libraries. I wasn't very interested in the low level hardware or interfacing to a sensor/module but I was more interested in an interactive UI and different ways to communicate with this device. I didn't have a particular project in mind so I created ESP8266-MyWidget; A project template for ESP8266.
 
-MyWidget can be used as a learning tool or as a template for starting a new ESP8266 project. I tried to incorporate many UI and APIs that may be useful for a ESP8266 project with a web interface.
+ESP8266-MyWidget can be used as a learning tool or as a template for starting a new ESP8266 project. I tried to incorporate many APIs that may be useful for a ESP8266 project with a web interface.
 
 ## Requirements
 
@@ -71,7 +71,11 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		- Request: ''cmd:get:status''
 		- Response: ''cmd:get:status:N''
 			- where N is "0" or "1" representing "OFF" or "ON" of light
-	- Config - Returns current configuration parameters. Read from /cfg.txt file.
+		- Speed - Returns flash speed of onboard LED
+		- Request: ''cmd:get:speed''
+		- Response: ''cmd:get:speed:N''
+			- where N is "1" to "4" representing flash speed of onboard LED
+		- Config - Returns current configuration parameters. Read from /cfg.txt file.
 		- Request: ''cmd:get:config''
 		- Response: ''cmd:get:config:channels:ports:user1:user2''
 			- where channels is NNN, ports is NN, user1 is XXXXX, user2 is XXXXXX
@@ -81,6 +85,10 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		- Request: ''cmd:set:toggle''
 		- Response: ''cmd:set:toggle:N''
 			- where N is "0" or "1" representing "OFF" or "ON" of light
+		- Speed - Sets the flash speed of onboard LED
+		- Request: ''cmd:set:speed''
+		- Response: ''cmd:set:speed:N''
+			- where N is "1" to "4" representing flash speed of onboard LED
 			
 	- Config - Sets current configuration parameters. Saved to /cfg.txt file.
 		- Request: ''cmd:set:config:config:channels:ports:user1:user2''
@@ -98,20 +106,23 @@ Extract the folder in each of these zip files and place it in the "library" fold
 ## User Interface
 
 - Nav Bar Menu
-- Home and config pages implemented
-- Displays Light Output
+- Home and Config pages implemented
+- Displays Current Light Output
 	- State1 field updates on page load and when the "Toggle" button is pressed
-- Displays Device Configuration
+- Displays Current Device Configuration
 	- Channels, ports, user1 and user2 fields update on page load
 	- Channels, ports, user1 and user2 are input fields
 	- Channels, ports, user1 and user2 can be modified and are saved when "Save Changes" button is pressed
-- Displays Device Uptime
+- Displays Current Device Uptime
 	- Uptime is updated on a 1 second basis
 	- Uptime format is: "N days, HH:MM:SS"
+- Displays Current LED Flash Speed
+	- Select input allows onboard LED speed to be changed
+	- LED speed is updated on select input change
 - All messages to/from config page use Web Services
 - Web Services has queue implemented if server is busy
-- Implemented using Bootstrap (3.4.1)
-- Implemented using JQuery (3.5.1)
+- Implemented using embedded Bootstrap (3.4.1)
+- Implemented using embedded JQuery (3.5.1)
 
 ## HTTP API - GET & POST
 
@@ -288,7 +299,13 @@ The calculations for the timer multipler:
 
 5 Mhz or 0.0000002 uS
 
-0.0000002 uS * 2500000 = 0.5s
+0.0000002 uS * 2500000 = 0.5s (SLOW)
+
+0.0000002 uS * 1,250,00 = 0.25s = 4 hz (MEDIUM)
+
+0.0000002 uS * 625,000 = 0.125s = 8 hz (FAST)
+
+0.0000002 uS * 312,500 = 0.0625s = 16 hz (FASTEST)
 
 ## Test & Debug
 
@@ -316,7 +333,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 - [BootStrap](https://getbootstrap.com/docs/3.4/) - BootStrap(3.4.1) - HTML, CSS, and JS framework
 - [jQuery](https://jquery.com/) - JS utility library
 - [OTA with Arduino IDE](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#arduino-ide) - How to setup and config IDE for OTA updates
-- [Random Nerd Tutorials](https://randomnerdtutorials.com/) - Lots of good information on 8266 here
+- [Random Nerd Tutorials](https://randomnerdtutorials.com/) - Lots of good information on ESP8266 here
 
 ## Credits
  - Lots of great information and the webservices JS script in config.html is from [ESPixelStick](https://github.com/forkineye/ESPixelStick)

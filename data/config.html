@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="MyWidget ESP8266 Demo">
+    <meta name="description" content="ESP8266 MyWidget - Config Page">
     <meta name="author" content="Tony Keith">
     
-    <title>MyWidget ESP8266 Demo - Config Page</title>
+    <title>ESP8266 MyWidget - Config Page</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -48,8 +48,8 @@
                 <center><strong>State1:</strong> <span id="state1">Updating...</span></center>
                 <p><center><button id="toggle" class="btn btn-primary">Toggle</button></center></p>
               </div>
-            </div>
-          </div>
+            </div> <!-- panel -->
+          </div> <!-- col -->
           <div class="col-md-4">
             <div class="panel panel-primary">
               <div class="panel-heading">Device Configuration</div>
@@ -83,15 +83,34 @@
                 <p><center><button id="configSave" class="btn btn-primary">Save Changes</button></center></p>
               </div>
             </div>
-          </div>
-          <div class="col-md-4">
             <div class="panel panel-primary">
               <div class="panel-heading">Device Uptime</div>
               <div class="panel-body">
                 <center><span id="uptime">Updating...</span></center>
               </div>            
-          </div>
-        </div>
+            </div> <!-- panel -->
+          </div> <!-- col -->
+          <div class="col-md-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">LED Flash Speed</div>
+              <div class="panel-body">
+                <form class="form-horizontal">
+                  <div class="form-group">
+                    <label for="speed" class="col-sm-5 control-label">Select:</label>
+                    <div class="col-sm-6">
+                      <select id="speed" class="form-control">
+                        <option value="1">Slow</option>
+                        <option value="2">Medium</option>
+                        <option value="3">Fast</option>
+                        <option value="4">Fastest</option>
+                      </select>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div> <!-- panel -->
+          </div> <!-- col -->
+        </div> <!-- row -->
       </div> <!-- /container -->
     </div> <!-- /container -->
 
@@ -110,11 +129,12 @@ window.addEventListener('load', onLoad);
 function onLoad(event) {
     // lets get started
     wsConnect();
-    initButton();
+    initListeners();
 }
-function initButton() {
+function initListeners() {
   document.getElementById('toggle').addEventListener('click', toggle);
   document.getElementById('configSave').addEventListener('click', configSave);
+  document.getElementById('speed').addEventListener('change', speedChange);
 }
 function toggle() {
   wsEnqueue("cmd:set:toggle");
@@ -127,6 +147,10 @@ function configSave() {
     + document.getElementById('ports').value + ":"
     + document.getElementById('user1').value + ":"
     + document.getElementById('user2').value);               
+}
+function speedChange() {
+  console.info("speedChange");
+  wsEnqueue("cmd:set:speed:" + document.getElementById('speed').value);
 }
 function RequestUptime()
 {
@@ -152,7 +176,7 @@ function RequestUptime()
 function ParseParameter(name)
 {
     return (location.search.split(name + '=')[1] || '').split('&')[0];
-}
+} // ParseParameter
 
 // On websocket connect
 function wsConnect()
@@ -185,8 +209,12 @@ function wsConnect()
             wsReadyToSend();
             // ask for uptime
             wsEnqueue("cmd:get:status");
+            // ask for config
             wsEnqueue("cmd:get:config");
-            RequestUptime(); // start uptime loop
+            // ask for speed
+            wsEnqueue("cmd:get:speed");
+            // start uptime loop
+            RequestUptime();
         };
 
         ws.onmessage = function (event) {
@@ -228,6 +256,10 @@ function wsConnect()
                     state1 = "OFF";
                   }
                   document.getElementById('state1').innerHTML = state1;
+                } else if (splits[2] == "speed") {
+                  // cmd:get:speed:X
+                  console.info("speed: " + splits[3]);
+                  document.getElementById('speed').value = splits[3];
                 } else if (splits[2] == "config") {
                   // cmd:get:config:channels:ports:user1:user2
 
@@ -255,6 +287,11 @@ function wsConnect()
                     state1 = "OFF";
                   }
                   document.getElementById('state1').innerHTML = state1;
+                } else if (splits[2] == "speed") {
+                  // cmd:get:speed:X
+                  console.info("speed: " + splits[3]);
+
+                  document.getElementById('speed').value = splits[3];
                 } else if (splits[2] == "config") {
                   // cmd:set:config:channels:ports:user1:user2
 
@@ -294,8 +331,8 @@ function wsConnect()
     {
         alert('WebSockets is NOT supported by your Browser! You will need to upgrade your browser.');
     }
-}
-// Websocket message queuer
+} // wsConnect
+// Websocket message queue handler
 function wsEnqueue(message)
 {
     // only send messages if the WS interface is up
