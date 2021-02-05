@@ -133,7 +133,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 ## HTTP API - GET & POST
 
 - Asynchronous
-- HTTP GET HEAP
+- HTTP GET FREE HEAP (TEXT)
 	- URL: `http://mywidget.local/heap`
 	- Returns free heap space
 	- Request:
@@ -144,14 +144,26 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		- `http://mywidget.local/heap`
 	- Example Response:
 		- `freeHeap=38616`
+
+- HTTP GET INTERRUPT COUNT (TEXT)
+	- URL: `http://mywidget.local/intcount`
+	- Returns interrupt counter
+	- Request:
+		- Name/Value Pair: N/A
+	- Response:
+		- Interrupt Counter=[Interrupt Counter]
+	- Example Request:
+		- `http://mywidget.local/intcount`
+	- Example Response:
+		- `Interrupt Counter=4533456`
 	
-- HTTP GET STATUS 
+- HTTP GET STATUS (TEXT)
 	- URL: `http://mywidget.local/status + query string (name/value pairs)`
 	- Returns status about network, filesystem, signal, heap and chip info in text format.
 		- Name value pairs are delimited using colon ":".
 		- Name and value fields are delimited using a equal "=" sign.
 
-- HTTP GET STATUS-JSON 
+- HTTP GET SYSTEM STATUS (JSON) 
 	- URL: `http://mywidget.local/status-json + query string (name/value pairs)`
 	- Returns status about network, filesystem, signal, heap and chip info.
 

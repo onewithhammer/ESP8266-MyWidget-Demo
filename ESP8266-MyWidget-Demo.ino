@@ -39,12 +39,13 @@ SOFTWARE.
 #define MQTT_PORT 1883
 #define START_WITH_CLEAN_SESSION   true
 
-
+// define timer multiplers for onboard LED flash speed
 #define INT_SLOW    2500000
 #define INT_MED     1250000
 #define INT_FAST    625000
 #define INT_FASTEST 312500
 
+// Your ssid and password here
 const char* ssid = "YOUR-SSID";
 const char* password = "YOUR-SSID-PASSWORD";
 
@@ -429,7 +430,12 @@ void initWeb() {
         Serial.println("GET heap");
         request->send(200, "text/plain", "freeHeap=" + String(ESP.getFreeHeap()));
   });
-  
+
+  // get intcount (TEXT response)
+  webServer.on("/intcount", HTTP_GET, [](AsyncWebServerRequest *request) {
+        Serial.println("GET intcount");
+        request->send(200, "text/plain", "Interrupt Counter=" + String(interruptCounter));
+  });
   // get status (TEXT response)
   webServer.on("/status", HTTP_GET, [](AsyncWebServerRequest* request) { 
     handleStatus(request); 
