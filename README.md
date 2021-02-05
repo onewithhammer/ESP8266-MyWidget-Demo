@@ -63,6 +63,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 	- All requests and responses are in TEXT format.
    
   - GET ACTIONS
+  
   - Uptime - Returns device uptime in milliseconds.
 		- Request: ''cmd:get:uptime''
 		- Response: ''cmd:get:uptime:NNNNNNNN''
@@ -84,6 +85,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 			- where channels is NNN, ports is NN, user1 is XXXXX, user2 is XXXXXX
 			
   - SET ACTIONS
+
   - Toggle - Toggles the current light from 0 to 1 or 1 to 0
   	- Request: ''cmd:set:toggle''
   	- Response: ''cmd:set:toggle:N''
