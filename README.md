@@ -1,5 +1,7 @@
 # ESP8266-MyWidget
 
+![Config Page](images/config-page.png)
+
 This project can be used as a learning tool or as a template for starting a new ESP8266 project.
 It contains many of the components to build a ESP8266 project with web interface.
 
