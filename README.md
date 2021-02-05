@@ -63,29 +63,33 @@ Extract the folder in each of these zip files and place it in the "library" fold
 	- All requests and responses are in TEXT format.
    
   - GET ACTIONS
-  	- Uptime - Returns device uptime in milliseconds.
+  - Uptime - Returns device uptime in milliseconds.
 		- Request: ''cmd:get:uptime''
 		- Response: ''cmd:get:uptime:NNNNNNNN''
 			- where NNNNNNNN is the device uptime in milliseconds
-   	- Status - Returns status of light (0/1)
+
+   - Status - Returns status of light (0/1)
 		- Request: ''cmd:get:status''
 		- Response: ''cmd:get:status:N''
 			- where N is "0" or "1" representing "OFF" or "ON" of light
-		- Speed - Returns flash speed of onboard LED
+			
+	- Speed - Returns flash speed of onboard LED
 		- Request: ''cmd:get:speed''
 		- Response: ''cmd:get:speed:N''
 			- where N is "1" to "4" representing flash speed of onboard LED
-		- Config - Returns current configuration parameters. Read from /cfg.txt file.
+
+	- Config - Returns current configuration parameters. Read from /cfg.txt file.
 		- Request: ''cmd:get:config''
 		- Response: ''cmd:get:config:channels:ports:user1:user2''
 			- where channels is NNN, ports is NN, user1 is XXXXX, user2 is XXXXXX
 			
   - SET ACTIONS
-  	- Toggle - Toggles the current light from 0 to 1 or 1 to 0
+  - Toggle - Toggles the current light from 0 to 1 or 1 to 0
 		- Request: ''cmd:set:toggle''
 		- Response: ''cmd:set:toggle:N''
 			- where N is "0" or "1" representing "OFF" or "ON" of light
-		- Speed - Sets the flash speed of onboard LED
+
+	- Speed - Sets the flash speed of onboard LED
 		- Request: ''cmd:set:speed''
 		- Response: ''cmd:set:speed:N''
 			- where N is "1" to "4" representing flash speed of onboard LED
