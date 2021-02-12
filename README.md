@@ -18,7 +18,8 @@ This project includes:
 - OTA (Over the Air) Updates
 - HTTP API Supports HTTP GET/POST
 - Auto Updating Web Site (Web Services using JS)
-- Multiple Speed Interrupt Timer (Flash Onboard LED)
+- Multiple Interrupt Timers
+- Flash Onboard LED Using Interrupt
 - Plus much more...
 
 ## History
@@ -338,6 +339,11 @@ Later I went back and added an HTTP GET with JSON response example without any J
  - The Web Services messages text using fields delimited with colons ":".
  - The config files are also text using fields delimited with colons ":".
 
+ ## Future Enhancements
+
+- [ ] Support multiple interrupt timers
+- [ ] Asynch NTP support
+- [ ] Other?
 
 ## References
 
