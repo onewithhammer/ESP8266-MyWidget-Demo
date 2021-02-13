@@ -151,7 +151,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 
 - HTTP GET INTERRUPT COUNT (TEXT)
 	- URL: `http://mywidget.local/intcount`
-	- Returns interrupt counter
+	- Returns interrupt counter - interruptCounter1 variable
 	- Request:
 		- Name/Value Pair: N/A
 	- Response:
@@ -160,6 +160,30 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		- `http://mywidget.local/intcount`
 	- Example Response:
 		- `Interrupt Counter=4533456`
+
+- HTTP GET INTERRUPT COUNT2 (TEXT)
+	- URL: `http://mywidget.local/intcount2`
+	- Returns interrupt counter 2 - interruptCounter2 variable
+	- Request:
+		- Name/Value Pair: N/A
+	- Response:
+		- Interrupt Counter2=[Interrupt Counter 2]
+	- Example Request:
+		- `http://mywidget.local/intcount2`
+	- Example Response:
+		- `Interrupt Counter2=23236`
+
+- HTTP GET INTERRUPT COUNT3 (TEXT)
+	- URL: `http://mywidget.local/intcount3`
+	- Returns interrupt counter 3 - interruptCounter3 variable
+	- Request:
+		- Name/Value Pair: N/A
+	- Response:
+		- Interrupt Counter3=[Interrupt Counter 3]
+	- Example Request:
+		- `http://mywidget.local/intcount3`
+	- Example Response:
+		- `Interrupt Counter3=98434445`
 	
 - HTTP GET STATUS (TEXT)
 	- URL: `http://mywidget.local/status + query string (name/value pairs)`
@@ -319,8 +343,8 @@ Then I discovered [ESP8266TimerInterrupt](https://github.com/khoih-prog/ESP8266T
 - The interrupt timer is setup for 10 millisecond 
 
 	- One ISR-based timer is used to flash the onboard timer (changeable speed - freq)
-	- Second ISR-based timer is used to increment a counter (fixed speed - freq)
-	- Third ISR-based timer is used to increment a counter (fixed speed - freq)
+	- Second ISR-based timer is used to increment a counter - interruptCounter2 (fixed speed - freq)
+	- Third ISR-based timer is used to increment a counter - interruptCounter3 (fixed speed - freq)
 
 
 ## Test & Debug
@@ -344,7 +368,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 
  ## Future Enhancements
 
-- [ ] Support multiple interrupt timers (ESP8266TimerInterrupt)
+- [X] Support multiple interrupt timers (ESP8266TimerInterrupt)
 - [ ] Asynch NTP support
 - [ ] Other?
 

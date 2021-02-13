@@ -1,6 +1,8 @@
 /*
 MIT License
 
+ESP8266-MyWidget-Demo.ino
+
 Copyright (c) 2021 Tony Keith
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,6 +22,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Version: 1.1.0
 */
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -28,26 +32,35 @@ SOFTWARE.
 #include <ESPAsyncWebServer.h>
 #include <ArduinoOTA.h>
 #include <LittleFS.h>
-#include <PangolinMQTT.h> 
-#include <Ticker.h>
+#include <PangolinMQTT.h>
+#include <Ticker.h> 
+#include <ESP8266TimerInterrupt.h>
+#include <ESP8266_ISR_Timer.h>
 
 #define LIBRARY "PangolinMQTT "PANGO_VERSION
 
+// MQTT Delay
 #define RECONNECT_DELAY_M   3
+// WIFI Delay
 #define RECONNECT_DELAY_W   5
 
+// MQTT Port
 #define MQTT_PORT 1883
 #define START_WITH_CLEAN_SESSION   true
 
-// define timer multiplers for onboard LED flash speed
-#define INT_SLOW    2500000
-#define INT_MED     1250000
-#define INT_FAST    625000
-#define INT_FASTEST 312500
+// 1uS * 10000 = 10mS
+#define HW_TIMER_INTERVAL        10000
+
+// define timer dividers for onboard LED flash speed
+#define INT_SLOW    1000  // 1hz
+#define INT_MED     500   // 5 hz     
+#define INT_FAST    100   // 10 hz
+#define INT_FASTEST 50    // 20 hz
 
 // Your ssid and password here
 const char* ssid = "YOUR-SSID";
 const char* password = "YOUR-SSID-PASSWORD";
+
 
 // Your MQTT broker address here
 #define MQTT_HOST IPAddress(192, 168, 0, 100)
@@ -61,17 +74,48 @@ bool ledState1 = 0;
 int counter = 1;
 
 // interrupt variables
-volatile unsigned int interruptCounter = 0;
-volatile unsigned int interruptSpeed = INT_SLOW;
+volatile unsigned long interruptCounter1 = 0;
+volatile unsigned long interruptCounter2 = 0;
+volatile unsigned long interruptCounter3 = 0;
 
-// interrupt handler
+unsigned long interruptInterval1 = INT_SLOW;
+unsigned long interruptInterval2 = INT_FAST;
+unsigned long interruptInterval3 = INT_FASTEST;
+
+// interrupt interval index for changeInterval()
+int timer1_idx=0; // ledTimerISR()
+int timer2_idx=0; // counterTimer1ISR()
+int timer3_idx=0; // counterTimer2ISR()
+
+
+// init ESP8266 timer
+ESP8266Timer      ITimer;
+ESP8266_ISR_Timer ISR_Timer;
+
+// interrupt timer handler
+void ICACHE_RAM_ATTR timerHandler() {
+  ISR_Timer.run();
+} // timerHandler()
+
+// interrupt handler to Toggle LED
 void ICACHE_RAM_ATTR ledTimerISR() {
-    digitalWrite(LED_BUILTIN,!(digitalRead(LED_BUILTIN)));  // Toggle LED Pin
-    // set timer
-    timer1_write(interruptSpeed);
-    // inc counter 
-    interruptCounter++;
+  // Toggle LED Pin
+  digitalWrite(LED_BUILTIN,!(digitalRead(LED_BUILTIN)));
+  // inc counter 
+  interruptCounter1++;
 } // ledTimerISR()
+
+// interrupt handler to increment counter
+void ICACHE_RAM_ATTR counterTimer1ISR() {
+   // inc counter 
+  interruptCounter2++;  
+} // counterTimer1ISR()
+
+// interrupt handler to increment counter
+void ICACHE_RAM_ATTR counterTimer2ISR() {
+    // inc counter 
+    interruptCounter3++;  
+} // counterTimer2ISR()
 
 // file system structure
 FSInfo fs_info;
@@ -88,7 +132,6 @@ AsyncWebSocket webSocket("/ws");
 
 void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
-
   
   if (info->final && info->index == 0 && info->len == len) {
     if(info->opcode == WS_TEXT) {
@@ -118,13 +161,13 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
            } else if (!strcmp("speed", token)) {
             String speed;
             // speed
-            if(interruptSpeed == INT_SLOW)
+            if(interruptInterval1 == INT_SLOW)
               speed = "1";
-            else if(interruptSpeed == INT_MED)
+            else if(interruptInterval1 == INT_MED)
               speed = "2";
-            else if(interruptSpeed == INT_FAST)
+            else if(interruptInterval1 == INT_FAST)
               speed = "3";
-            else if(interruptSpeed == INT_FASTEST)
+            else if(interruptInterval1 == INT_FASTEST)
               speed = "4";
           
             client->text("cmd:get:speed:" + String(speed));
@@ -154,19 +197,26 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
             // toggle
             ledState1 = !ledState1;           
             client->text("cmd:set:toggle:" + String(ledState1));
-          } else if (!strcmp("speed", token)) {          
+          } else if (!strcmp("speed", token)) {
+            unsigned long tmpSpeed;          
             // speed 
             char *speed = strtok(NULL, ":");
             Serial.println(speed);
             if(strlen(speed) == 1) {
               if(speed[0] == '1')
-                interruptSpeed = INT_SLOW;
+                tmpSpeed = INT_SLOW;
               else if (speed[0] == '2')
-                interruptSpeed = INT_MED;
-              else if (speed[0] == '3')  
-                interruptSpeed = INT_FAST;  
-              else if (speed[0] == '4')  
-                interruptSpeed = INT_FASTEST;
+                tmpSpeed = INT_MED;
+              else if (speed[0] == '3')
+                tmpSpeed = INT_FAST; 
+              else if (speed[0] == '4')
+                tmpSpeed = INT_FASTEST;
+
+              if(tmpSpeed != interruptInterval1) {
+                interruptInterval1 = tmpSpeed;
+                // update the interval for ledTimerISR
+                ISR_Timer.changeInterval(timer1_idx, interruptInterval1);
+              }
             }
             client->text("cmd:set:speed:" + String(speed));
           } else if (!strcmp("config", token)) {
@@ -284,22 +334,22 @@ void onMqttMessage(const char* topic, const uint8_t* payload, size_t len,uint8_t
 
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
              void *arg, uint8_t *data, size_t len) {
-    switch (type) {
-      case WS_EVT_CONNECT:
-        Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
-        break;
-      case WS_EVT_DISCONNECT:
-        Serial.printf("WebSocket client #%u disconnected\n", client->id());
-        break;
-      case WS_EVT_DATA:
-        handleWebSocketMessage(server, client, arg, data, len);
-        break;
-      case WS_EVT_PONG:
-        Serial.println("ping");
-        break;
-      case WS_EVT_ERROR:
-        Serial.println("error");
-        break;
+  switch (type) {
+     case WS_EVT_CONNECT:
+      Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+     break;
+     case WS_EVT_DISCONNECT:
+       Serial.printf("WebSocket client #%u disconnected\n", client->id());
+     break;
+     case WS_EVT_DATA:
+       handleWebSocketMessage(server, client, arg, data, len);
+     break;
+     case WS_EVT_PONG:
+       Serial.println("ping");
+     break;
+     case WS_EVT_ERROR:
+       Serial.println("error");
+     break;
   }
 } // onEvent()
 
@@ -434,7 +484,17 @@ void initWeb() {
   // get intcount (TEXT response)
   webServer.on("/intcount", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("GET intcount");
-        request->send(200, "text/plain", "Interrupt Counter=" + String(interruptCounter));
+        request->send(200, "text/plain", "Interrupt Counter=" + String(interruptCounter1));
+  });
+  // get intcount2 (TEXT response)
+  webServer.on("/intcount2", HTTP_GET, [](AsyncWebServerRequest *request) {
+        Serial.println("GET intcount2");
+        request->send(200, "text/plain", "Interrupt Counter2=" + String(interruptCounter2));
+  });
+  // get intcount3 (TEXT response)
+  webServer.on("/intcount3", HTTP_GET, [](AsyncWebServerRequest *request) {
+        Serial.println("GET intcount3");
+        request->send(200, "text/plain", "Interrupt Counter3=" + String(interruptCounter3));
   });
   // get status (TEXT response)
   webServer.on("/status", HTTP_GET, [](AsyncWebServerRequest* request) { 
@@ -568,25 +628,30 @@ void setup() {
   while (dir.next()) {
         Serial.printf("%s - %d bytes\n", dir.fileName().c_str(), dir.fileSize());
   }
-  
+
   // Initialize the LED_BUILTIN pin as an output
   pinMode(LED_BUILTIN, OUTPUT);
   
-  // Initialize Timer
-  timer1_attachInterrupt(ledTimerISR);
-  timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
+  // set timer to 100000/100 = 1000 hz 
+  if (! ITimer.attachInterruptInterval(HW_TIMER_INTERVAL, timerHandler)) {
+    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+  }
   
   // The timers of the RTC are not affected by the CPU speed setting. 
   // A given timer divisor produces the same rate of change of the RTC timer's COUNT register with both speed settings.
 
-  // TIM_DIV16 80 Mhz / 16 = 5 Mhz
-  // 5 Mhz or 0.0000002 uS
-  // 0.0000002 uS * 2,500,000 = 0.5s = 2 hz
-  // 0.0000002 uS * 1,250,00 = 0.25s = 4 hz
-  // 0.0000002 uS * 625,000 = 0.125s = 8 hz
-  // 0.0000002 uS * 312,500 = 0.0625s = 16 hz
-  timer1_write(interruptSpeed);
+  // 100 = 1 hz     (SLOW)
+  // 50  = 5 hz     (MEDIUM)
+  // 10  = 10 hz    (FAST)
+  // 5   = 20 hz    (FASTEST)
+
+  timer1_idx = ISR_Timer.setInterval(interruptInterval1, ledTimerISR);
+  timer2_idx = ISR_Timer.setInterval(interruptInterval2, counterTimer1ISR);
+  timer3_idx = ISR_Timer.setInterval(interruptInterval3, counterTimer2ISR);
   
+  Serial.printf("Timer1 Index=%d\n",timer1_idx);
+  Serial.printf("Timer2 Index=%d\n",timer2_idx);
+  Serial.printf("Timer3 Index=%d\n",timer3_idx);
 } // setup()
 
 void onMqttDisconnect(int8_t reason) {
