@@ -1,5 +1,9 @@
 # ESP8266-MyWidget
 
+[![GitHub release](https://img.shields.io/github/release/onewithhammer/ESP8266-MyWidget-Demo.svg)](https://github.com/onewithhammer/ESP8266-MyWidget-Demo/releases)
+[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/onewithhammer/ESP8266-MyWidget-Demo/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/onewithhammer/ESP8266-MyWidget-Demo.svg)](http://github.com/onewithhammer/ESP8266-MyWidget-Demo/issues)
+
 ![Config Page](images/config-page.png)
 
 This project can be used as a learning tool or as a template for starting a new ESP8266 project.
