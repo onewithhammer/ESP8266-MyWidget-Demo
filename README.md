@@ -6,8 +6,8 @@
 
 ![Config Page](images/config-page.png)
 
-This project can be used as a learning tool or as a template for starting a new ESP8266 project.
-It contains many of the components to build a ESP8266 project with web interface.
+This project can be used as a framework, learning tool or as a template for starting a new ESP8266 project.
+It contains many of the components to build a ESP8266 project with dynamic web interface.
 
 This project includes:
 - ESP8266 Development
@@ -33,6 +33,8 @@ I purchased several [ESPixelSticks](https://www.amazon.com/dp/B072XT1V77/ref=cm_
 ESP8266-MyWidget can be used as a learning tool or as a template for starting a new ESP8266 project. I tried to incorporate many APIs that may be useful for a ESP8266 project with a web interface.
 
 ## Requirements
+
+ESP8266-based development board - I used the Wemos D1 Mini
 
 Along with the Arduino IDE, you'll need the following software to build this project:
 
@@ -346,9 +348,12 @@ The original implementation used timer1
 Then I discovered [ESP8266TimerInterrupt](https://github.com/khoih-prog/ESP8266TimerInterrupt) which supports 16 ISR-based timers.
 - The interrupt timer is setup for 10 millisecond 
 
-	- One ISR-based timer is used to flash the onboard timer (changeable speed - freq)
-	- Second ISR-based timer is used to increment a counter - interruptCounter2 (fixed speed - freq)
-	- Third ISR-based timer is used to increment a counter - interruptCounter3 (fixed speed - freq)
+	- One ISR-based timer is used to flash the onboard timer and increment counter
+		- interruptCount1 (changeable speed - freq)
+	- Second ISR-based timer is used to increment counter
+		- interruptCounter2 (fixed speed - freq)
+	- Third ISR-based timer is used to increment counter
+		- interruptCounter3 (fixed speed - freq)
 
 
 ## Test & Debug
@@ -373,7 +378,10 @@ Later I went back and added an HTTP GET with JSON response example without any J
  ## Future Enhancements
 
 - [X] Support multiple interrupt timers (ESP8266TimerInterrupt)
+- [ ]	Support dynamic interval timers on config page
+- [ ] Support HTTP GET INTERRUPT COUNT with args
 - [ ] Asynch NTP support
+- [ ] More code comments
 - [ ] Other?
 
 ## References
