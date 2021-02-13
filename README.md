@@ -18,8 +18,8 @@ This project includes:
 - OTA (Over the Air) Updates
 - HTTP API Supports HTTP GET/POST
 - Auto Updating Web Site (Web Services using JS)
-- Multiple Interrupt Timers
-- Flash Onboard LED Using Interrupt
+- Multiple Interrupt Timers (ESP8266TimerInterrupt)
+- Flash Onboard LED Using Interrupt Timer
 - Plus much more...
 
 ## History
@@ -42,6 +42,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 - [ESPAsyncTCP](https://github.com/me-no-dev/ESPAsyncTCP) - Asynchronous TCP Library
 - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) - Asynchronous HTTP and WebSocket Server for ESP8266 Arduino
 - [PangolinMQTT](https://github.com/philbowles/PangolinMQTT) - Asynchronous MQTT client library
+- [ESP8266TimerInterrupt](https://github.com/khoih-prog/ESP8266TimerInterrupt) - Supports 16 ISR-based timers
 
 
 ## Features
@@ -308,17 +309,19 @@ OTA (Over The Air) Updates allows you to update the firmware on the device witho
 
 This project has a interrupt timer used to flash the onboard LED.
 
-- timer1 is attached to an interrupt handler; ledTimerISR().
-- timer1 is enabled with the TIM_DIV16 timer divider, TIM_EDGE trigger and TIM_SINGLE for single shot
-- The timer uses a timer1_write multipler
-- The calculations for the timer multipler:
+- ESP8266 has only 2 hardware timers, named Timer0 and Timer1
+- Timer0 has been used for WiFi and it's not advisable to use while using WiFi
+- This means there is only 1 usable timer
 
-	- 80 Mhz / 16 = 5 Mhz
-	- 5 Mhz or 0.0000002 uS
-	- 0.0000002 uS * 2500000 = 0.5s (SLOW)
-	- 0.0000002 uS * 1,250,00 = 0.25s = 4 hz (MEDIUM)
-	- 0.0000002 uS * 625,000 = 0.125s = 8 hz (FAST)
-	- 0.0000002 uS * 312,500 = 0.0625s = 16 hz (FASTEST)
+The original implementation used timer1
+
+Then I discovered [ESP8266TimerInterrupt](https://github.com/khoih-prog/ESP8266TimerInterrupt) which supports 16 ISR-based timers.
+- The interrupt timer is setup for 10 millisecond 
+
+	- One ISR-based timer is used to flash the onboard timer (changeable speed - freq)
+	- Second ISR-based timer is used to increment a counter (fixed speed - freq)
+	- Third ISR-based timer is used to increment a counter (fixed speed - freq)
+
 
 ## Test & Debug
 
@@ -341,7 +344,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 
  ## Future Enhancements
 
-- [ ] Support multiple interrupt timers
+- [ ] Support multiple interrupt timers (ESP8266TimerInterrupt)
 - [ ] Asynch NTP support
 - [ ] Other?
 
