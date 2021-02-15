@@ -1,0 +1,576 @@
+<html>
+
+<center><h1>ESP8266-MyWidget</h1></center>
+
+This project can be used as a learning tool or as a template for starting a new ESP8266 project.
+It contains many of the components to build a ESP8266 project with web interface.
+<br>
+This demo includes:
+<ul>
+	<li>ESP8266 Development</li>
+	<li>mDNS - multicast DNS (mywidget.local)</li>
+	<li>Asynchronous Web Server (ESPAsyncWebServer)</li>
+	<li>Asynchronous Web Services (ESPAsyncWebServer)</li>
+	<li>Asynchronous MQTT (PangolinMQTT)</li>
+	<li>LittleFS File System</li>
+	<li>Embedded Bootstrap (3.4.1)</li>
+	<li>Embedded jquery (3.5.1)</li>
+	<li>Save/Load Config File (text)</li>
+	<li>OTA (Over the Air) Updates</li>
+	<li>HTTP API Supports HTTP GET/POST</li>
+	<li>Auto Updating Web Site (Web Services using JS)</li>
+	<li>Multiple Interrupt Timers (ESP8266TimerInterrupt)</li>
+	<li>Flash Onboard LED Using Interrupt Timer</li>
+	<li>Plus much more...</li>
+</ul>
+
+<center><h1>History</h1></center>
+
+I purchased several <a href="https://www.amazon.com/dp/B072XT1V77/ref=cm_sw_em_r_mt_dp_-RscGb7XH5PQ3" target="_blank">ESPixelSticks</a> from Amazon for my synchronized LED Christmas light display. After using the ESPixelSticks, I became interested in how the ESP8266 worked and how to program it. So I began to review the <a href="https://github.com/forkineye/ESPixelStick" target="_blank">ESPixelStick</a> source code and the specifications of the ESP8266. It didn't take long to find out there is an add-on for the Arduino IDE that allows you to program the ESP8266 using the Arduino IDE and its programming language. A few years back, I had created some simple projects using Arduino UNO R3 and programmed using the Arduino IDE. Since I was already familiar with the Arduino IDE, I started by modifying some of the simple examples and playing with different libraries. I wasn't very interested in the low level hardware or interfacing to a sensor/module but I was more interested in an interactive UI and different ways to communicate with this device. I didn't have a particular project in mind so I created ESP8266-MyWidget; A project template for ESP8266.<br>
+<br>
+ESP8266-MyWidget can be used as a learning tool or as a template for starting a new ESP8266 project. I tried to incorporate many APIs that may be useful for a ESP8266 project with a web interface.<br>
+
+<center><h1>Requirements</h1></center>
+
+Along with the Arduino IDE, you'll need the following software to build this project:<br>
+<ul>
+	<li><a href="https://github.com/esp8266/Arduino" target="_blank">Adruino for ESP8266</a> - Arduino core for ESP8266</li>
+	<li><a href="https://github.com/esp8266/arduino-esp8266fs-plugin" target="_blank">Arduino ESP8266 LittleFS Filesystem Uploader</a> - Arduino plugin for uploading files to LittleFS</li>
+</ul>
+
+The following libraries are required:<br>
+Extract the folder in each of these zip files and place it in the "library" folder under your arduino environment
+<ul>
+	<li><a href="https://github.com/me-no-dev/ESPAsyncTCP" target="_blank">ESPAsyncTCP</a> - Asynchronous TCP Library</li>
+	<li><a href="https://github.com/me-no-dev/ESPAsyncWebServer" target="_blank">ESPAsyncWebServer</a> - Asynchronous HTTP and WebSocket Server for ESP8266 Arduino</li>
+	<li><a href="https://github.com/philbowles/PangolinMQTT" target="_blank">PangolinMQTT</a> - Asynchronous MQTT client library</li>
+	<li><a href="https://github.com/khoih-prog/ESP8266TimerInterrupt" target="_blank">ESP8266TimerInterrupt</a> - Supports 16 ISR-based timers
+</ul>
+
+<center><h1>Features</h1></center>
+
+<h2>mDNS - multicast DNS</h2>
+<ul>
+	<li>Mulicast DNS allows you to use a local DNS name (mywidget.local) to access the web interface.</li>
+	<li>There is no need to know the local IP address obtained from the WIFI connection.</li>
+	<li>mDNS will resolve the IP address for you.</li>
+	<br>
+	<li>Enter the following into browser: http://mywidget.local</li>
+</ul>
+<h2>Web Services</h2> 
+<ul>
+	<li>Asynchronous</li>
+	<li>Supports GET and SET ACTIONS</li>
+	<li>Formats:</li>
+		<ul>
+    	<li>cmd:get:action</li>
+    	<li>cmd:set:action</li>
+    </ul>
+	<li>All requests and responses are in TEXT format.</li><br>
+   
+  <li>GET ACTIONS</li>
+  <br>
+  	<ul>
+  		<li>Uptime - Returns device uptime in milliseconds.</li>
+			<li>Request: ''cmd:get:uptime''</li>
+			<li>Response: ''cmd:get:uptime:NNNNNNNN''</li>
+			<ul>
+				<li>where NNNNNNNN is the device uptime in milliseconds</li>
+			</ul>
+		</ul>
+		<br>
+		<ul>
+   		<li>Status - Returns status of light (0/1)</li>
+			<li>Request: ''cmd:get:status''</li>
+			<li>Response: ''cmd:get:status:N''</li>
+			<ul>
+				<li>where N is "0" or "1" representing "OFF" or "ON" of light</li>
+			</ul>
+		</ul>
+		<br>
+		<ul>
+   		<li>Speed - Returns flash speed of onboard LED</li>
+			<li>Request: ''cmd:get:speed''</li>
+			<li>Response: ''cmd:get:speed:N''</li>
+			<ul>
+				<li>where N is "1" to "4" representing representing flash speed of onboard LED</li>
+			</ul>
+		</ul>
+		<br>
+		<ul>
+			<li>Config - Returns current configuration parameters. Read from /cfg.txt file.</li>
+			<ul>
+				<li>Request: ''cmd:get:config''</li>
+				<li>Response: ''cmd:get:config:channels:ports:user1:user2''</li>
+				<ul>
+					<li>where channels is NNN, ports is NN, user1 is XXXXX, user2 is XXXXXX</li>
+				</ul>
+			</ul>
+		</ul>
+	<br>		
+  <li>SET ACTIONS</li>
+  <br>
+  	<ul>
+  		<li>Toggle - Toggles the current light from 0 to 1 or 1 to 0</li>
+			<li>Request: ''cmd:set:toggle''</li>
+			<li>Response: ''cmd:set:toggle:N''</li>
+			<ul>
+				<li>where N is "0" or "1" representing "OFF" or "ON" of light</li>
+			</ul>
+		</ul>
+		<br>
+		 <ul>
+  		<li>Speeds - Sets the flash speed of onboard LED</li>
+			<li>Request: ''cmd:set:speed''</li>
+			<li>Response: ''cmd:set:speed:N''</li>
+			<ul>
+				<li>where N is "1" to "4" representing the flash speed of onboard LED</li>
+			</ul>
+		</ul>
+		<br>
+		<ul>
+			<li>Config - Sets current configuration parameters. Saved to /cfg.txt file.</li>
+			<li>Request: ''cmd:set:config:config:channels:ports:user1:user2''</li>
+			<li>Response: ''cmd:set:config:channels:ports:user1:user2''</li>
+			<ul>
+				<li>where channels is NNN, ports is NN, user1 is XXXXX, user2 is XXXXXX</li>
+			</ul>
+		</ul>
+</ul>
+
+<h2>Web Server</h2>
+<ul>
+	<li>Asynchronous</li>
+	<li>Supports serving html, css, js files</li>
+	<li>Sets default to index.html</li>
+	<li>Serves two embedded web pages (index.html &amp; config.html)</li>
+	<li>Supports file not found message</li>
+</ul>
+
+<h2>User Interface</h2>
+<ul>
+	<li>Nav Bar Menu</li>
+	<li>Home and config pages implemented</li>
+	<li>Displays Current Light Output</li>
+	<ul>
+		<li>State1 field updates on page load and when the "Toggle" button is pressed</li>
+	</ul>
+	<li>Displays Current Device Configuration</li>
+	<ul>
+		<li>Channels, ports, user1 and user2 fields update on page load</li>
+		<li>Channels, ports, user1 and user2 are input fields</li>
+		<li>Channels, ports, user1 and user2 can be modified and are saved when "Save Changes" button is pressed</li>
+	</ul>
+	<li>Displays Current Device Uptime</li>
+	<ul>
+		<li>Uptime is updated on a 1 second basis</li>
+		<li>Uptime format is: "N days, HH:MM:SS"</li>
+	</ul>
+	<li>Current LED Flash Speed</li>
+	<ul>
+		<li>Select input allows onboard LED speed to be changed</li>
+		<li>LED speed is updated on select input change</li>
+	</ul>
+	<li>All messages to/from config page use Web Services</li>
+	<li>Web Services has queue implemented if server is busy</li>
+	<li>Implemented using embedded Bootstrap (3.4.1)</li>
+	<li>Implemented using embedded JQuery (3.5.1)</li>
+</ul>
+
+<h2>HTTP API - GET and POST</h2>
+
+<ul>
+	<li>Asynchronous</li>
+	<br>
+	<li>HTTP GET FREE HEAP (TEXT)</li>
+	<ul>
+		<li>URL: http://mywidget.local/heap</li>
+		<li>Returns free heap space</li>
+		<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: N/A</li>
+			</ul>
+		<li>Response:</li>
+			<ul>
+				<li>freeHeap=[Free Heap]</li>
+			</ul>
+			<br>
+		<li>Example Request:</li>
+			<ul>
+				<li>http://mywidget.local/heap</li>
+			</ul>
+		<li>Example Response:</li>
+			<ul>
+				<li>freeHeap=38616</li>
+			</ul>
+	</ul>
+	<br>
+	<li>HTTP GET INTERRUPT COUNT (TEXT)</li>
+	<ul>
+		<li>URL: http://mywidget.local/intcount</li>
+		<li>Returns interrupt counter - interruptCounter1 variable</li>
+		<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: N/A</li>
+			</ul>
+		<li>Response:</li>
+			<ul>
+				<li>Interrupt Counter=[Interrupt Counter]</li>
+			</ul>
+			<br>
+		<li>Example Request:</li>
+			<ul>
+				<li>http://mywidget.local/intcount</li>
+			</ul>
+		<li>Example Response:</li>
+			<ul>
+				<li>Interrupt Counter=4533456</li>
+			</ul>
+	</ul>
+	<br>
+	<li>HTTP GET INTERRUPT COUNT2 (TEXT)</li>
+	<ul>
+		<li>URL: http://mywidget.local/intcount2</li>
+		<li>Returns interrupt counter - interruptCounter2 variable</li>
+		<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: N/A</li>
+			</ul>
+		<li>Response:</li>
+			<ul>
+				<li>Interrupt Counter2=[Interrupt Counter 2]</li>
+			</ul>
+			<br>
+		<li>Example Request:</li>
+			<ul>
+				<li>http://mywidget.local/intcount2</li>
+			</ul>
+		<li>Example Response:</li>
+			<ul>
+				<li>Interrupt Counter=23236</li>
+			</ul>
+	</ul>
+	<br>
+	<li>HTTP GET INTERRUPT COUNT3 (TEXT)</li>
+	<ul>
+		<li>URL: http://mywidget.local/intcount3</li>
+		<li>Returns interrupt counter - interruptCounter3 variable</li>
+		<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: N/A</li>
+			</ul>
+		<li>Response:</li>
+			<ul>
+				<li>Interrupt Counter=[Interrupt Counter 3]</li>
+			</ul>
+			<br>
+		<li>Example Request:</li>
+			<ul>
+				<li>http://mywidget.local/intcount3</li>
+			</ul>
+		<li>Example Response:</li>
+			<ul>
+				<li>Interrupt Counter3=98434445</li>
+			</ul>
+	</ul>
+	<br>
+	<li>HTTP GET STATUS (TEXT)</li>
+	<ul>
+		<li>URL: http://mywidget.local/status + query string (name/value pairs)</li>
+		<li>Returns status about network, filesystem, signal, heap and chip info in text format.</li>
+		<ul>
+			<li>Name value pairs are delimited using colon ":".</li>
+			<li>Name and value fields are delimited using a equal "=" sign.</li>
+		</ul>
+	</ul>
+	<br>
+	<li>HTTP GET STATUS (JSON)</li>
+	<ul>
+		<li>URL: http://mywidget.local/status-json + query string (name/value pairs)</li>
+		<li>Returns status about network, filesystem, signal, heap and chip info.</li>
+		<br>
+		<li>Query string (name/value pairs) parameters:</li>
+		<br>
+		<li>Network</li>
+		<ul>
+			<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: network=true</li>
+			</ul>
+			<li>Response:</li>
+			<ul>
+				<li>ssid=[SSID]</li>
+				<li>hostname=[Hostname]</li>
+				<li>ip=[IP Address]</li>
+				<li>gateway=[Gateway]</li>
+				<li>netmask=[Netmask]</li>
+			</ul>
+		</ul>
+		<br>
+		<li>Filesystem</li>
+		<ul>
+			<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: fs=true</li>
+			</ul>
+			<li>Response:</li>
+			<ul>
+				<li>totalBytes=[Total Bytes]</li>
+				<li>usedBytes=[Used Bytes]</li>
+			</ul>
+		</ul>
+		<br>
+		<li>Signal</li>
+		<ul>
+			<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: signal=true</li>
+			</ul>
+			<li>Response:</li>
+			<ul>
+				<li>strength=[Signal Strength]</li>
+			</ul>
+		</ul>
+		<br>
+		<li>Heap</li>
+		<ul>
+			<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: heap=true</li>	
+			</ul>
+			<li>Response:</li>
+			<ul>
+				<li>freeHeap=[Free Heap]</li>
+			</ul>
+		</ul>
+		<br>
+		<li>Chip Info</li>
+		<ul>
+			<li>Request:</li>
+			<ul>
+				<li>Name/Value Pair: chipInfo=true</li>
+			</ul>
+	 		<li>Response:</li>
+	 		<ul>
+				<li>chipId=[Chip ID]</li>
+				<li>flashChipId=[Flash Chip ID]</li>
+				<li>flashChipSize=[Flash Chip Size]</li>
+				<li>flashChipRealSize=[Flash Chip Real Size]</li>
+			</ul>
+		</ul>
+		<br>
+		<li>Example Request:</li>
+		<ul>
+			<li>http://mywidget.local/status?network=true&fs=true&signal=true&heap=true&chipInfo=true</li>
+		</ul>
+		<li>Example Response (TEXT):</li>
+		<ul>
+			<li>=:network=true:ssid=MyWifi:hostname=mywidget:ip=192.168.0.20:gateway=192.168.0.1:netmask=255.255.255.0:signal=true:strength=-68:chipInfo=true:chipId=3016621:flashChipId=1458392:flashChipSize=4194304:flashChipRealSize=4194304:heap=true:freeHeap=38216:fs=true:totalBytes=1024000:usedBytes=327680</li>
+		</ul>
+		<br>
+		<li>Example Request:</li>
+		<ul>
+			<li>http://mywidget.local/status-json?network=true&fs=true&signal=true&heap=true&chipInfo=true</li>
+		</ul>
+		<li>Example Response (JSON):</li>
+		<ul>
+			<li>{"network": {<br>
+       "ssid": "MyWifi",<br>
+			"hostname": "mywidget",<br> 
+			"ip": "192.168.0.20",<br>
+			"gateway": "192.168.0.1",<br>
+			"netmask": "255.255.255.0"<br> 
+			},<br>
+			"signal": {<br>
+			"strength": "-78"<br>
+			},<br>
+			"chipInfo": {<br>
+			"chipId": "3016621",<br>
+			"flashChipId": "1458392",<br> 
+			"flashChipSize": "4194304",<br> 
+			"flashChipRealSize": "4194304"<br> 
+			},<br>
+			"heap": {<br>
+			"freeHeap": "38024"<br>
+			},<br> 
+			"fs": {<br>
+			"totalBytes": "1024000",<br> 
+			"usedBytes": "327680"}}</li>
+		</ul>
+	</ul>
+<br>
+<li>HTTP POST COUNTER</li>
+	<ul>
+	<li>URL: http://mywidget.local/counter + query string (name/value pairs) in Request Body</li>
+	<li>Sets the internal counter to Request counter value. Range 1 to 9999</li>
+	<li>Request:</li>
+	<ul>
+		<li>Name/Value Pair: counter=XXXX</li>
+	</ul>
+	<li>Response:</li>
+	<ul>
+		<li>POST: Counter set to: XXXX</li>
+	</ul>
+	<br>		
+	<li>Example Request:</li>
+	<ul>
+		<li>POST http://mywidget.local/counter</li>
+		<li>form data in Request Body - counter=109</li>
+	</ul>
+	<li>Example Response (TEXT):</li>
+	<ul>
+		<li>POST: Counter set to: 109</li>
+	</ul>
+</ul>
+</ul>
+
+<h2>File System</h2>
+
+This project is implmented using the LittleFS file system. All data is placed in a 'data' directory.
+<br>
+Here is the directory and files associated with this project:
+<br>
+<ul>
+<li>data (Directory)</li>
+	<ul>
+		<li>css (Style Sheet Directory)</li>
+		<ul>
+			<li>bootstrap.min.css (bootstrap CSS file)</li>
+		</ul>
+		<li>js (Java Script directory)</li>
+		<ul>
+			<li>bootstrap.min.js (bootstrap JS file)</li>
+			<li>jquery.min.js (jquery JS file)</li>
+		</ul>
+		<li>cfg.txt (config file - text format)</li>
+		<li>index.html (index file - HTML page)</li>
+		<li>config.html (config file - HTML page)</li>
+	</ul>
+</ul>
+If you modify a file locally, you must upload to device using <a href="https://github.com/esp8266/arduino-esp8266fs-plugin" target="_blank">Arduino ESP8266 LittleFS Filesystem Uploader</a>.
+<br>
+The LittleFS implementation for the ESP8266 supports filenames of up to 31 characters + terminating zero (i.e. char filename[32]), and as many subdirectories as space permits.
+<br>
+Keep your filenames + directories names short!
+
+<h2>MQTT (Message Queuing Telemetry Transport) - IoT messaging</h2>
+
+MQTT is implemented when a subscribe message is received, a corresponding publish message is sent.
+
+	<ul>
+	<li>Subscribe</li>
+	<br>
+		<ul>
+		<li>esp32/get/uptime - Request uptime</li>
+			<ul>
+				<li>Response: Publish: esp32/uptime (payload:text:"NNNNNNNN")</li>
+				<ul>
+					<li>where NNNNNNNN is the device uptime in milliseconds</li>
+				</ul>
+			</ul>
+		<br>
+		<li>esp32/get/heap - Request current heap size</li>
+			<ul>
+				<li>Response: Publish: esp32/heap (payload:text:"NNNNNN")</li>
+				<ul>
+					<li>where NNNNNN is the current heap size</li>
+				</ul>
+			</ul>
+		<br>
+		<li>esp32/get/counter - Request current counter value and increment</li>
+			<ul>
+				<li>Response: Publish: esp32/counter (payload:text:"NNNNNN")</li>
+				<ul>
+					<li>where NNNNNN is the current counter value.</li>
+					<li>Counter is incremented after every esp32/get/counter received. Range 1 to 9999</li>
+				</ul>
+			</ul>
+		<br>
+		<li>esp32/set/counter (payload:"NNNNNN") - Set counter value to payload value (text)</li>
+			<ul>
+				<li>Response: Publish: esp32/counter (payload:text:"NNNNNN")</li>
+				<ul>
+					<li>where NNNNNN is the current counter value (text). Range 1 to 9999</li>
+				</ul>
+			</ul>
+	</ul>
+			
+<h2>OTA (Over The Air) Updates</h2>
+<br>
+OTA (Over The Air) Updates allows you to update the firmware on the device without being connected via a USB cable.  The updates can occur after the device is connected to WIFI.  The initial firmware installation requires using a USB cable but all subsequent updates can be perform remotely over WIFI.
+<br>
+<h2>Interrupt Hander</h2>
+<br>
+This project has a interrupt timer used to flash the onboard LED.
+<ul>
+	<li>ESP8266 has only 2 hardware timers, named Timer0 and Timer1</li>
+	<li>Timer0 has been used for WiFi and it's not advisable to use while using WiFi</li>
+	<li>This means there is only 1 usable timer</li>
+</ul>
+The original implementation used timer1
+<br>
+Then I discovered [ESP8266TimerInterrupt](https://github.com/khoih-prog/ESP8266TimerInterrupt) which supports 16 ISR-based timers.
+<ul>
+	<li>The main interrupt timer is setup for 10 millisecond interval</li>
+	<ul>
+		<li>One ISR-based timer is used to flash the onboard timer and increment counter</li>
+		<ul>
+			<li>interruptCounter1 (changeable speed / freq)</li>
+		</ul>
+		<li>Second ISR-based timer is used to increment counter</li>
+		<ul>
+			<li>interruptCounter2 (fixed speed / freq)</li>
+		</ul>
+		<li>Third ISR-based timer is used to increment counter</li>
+		<ul>
+			<li>interruptCounter3 (fixed speed / freq)
+</li>
+		</ul>
+	</ul>
+</ul>
+
+<h2>Test Debug</h2>
+<br>
+I used a few different tools to test and debug.  The source code was mainly debugged using Serial.print() messages and the Serial Monitor (Tools->Serial Monitor) in the Arduino IDE.
+<br>
+I also used the Firefox web developer tools (console & network) debug the JavaScript and web services requests / responses.
+<br>
+To test and debug the HTTP GET and POST requests/response messages, I used [POSTMAN](https://www.postman.com/)
+<br>
+To test and debug MQTT, I used Mosquitto and Node-Red.
+
+<br>
+<h2>Notes</h2>
+<br>
+I orginally tried to send / receive JSON messages using the popular Arduino JSON Library [ArduinoJson](https://github.com/bblanchon/ArduinoJson) but I couldn't make it stable.  I kept getting exceptions happening in various places, while stress testing (calling GET heap repeatively), so I eventually removed the ArduinoJson library and references. I converted all Web Services messages to send/receive text messages.  I also converted files to save as text files (cfg.txt) instead of JSON.
+<br>
+Later I went back and added an HTTP GET with JSON response example without any JSON libraries.
+<ul>
+	<li>The Web Services messages text using fields delimited with colons ":".</li>
+	<li>The config files are also text using fields delimited with colons ":".</li>
+</ul>
+<br>
+<h2>Future Enhancements</h2>
+<br>
+<ul>
+	<li>[X] Support multiple interrupt timers (ESP8266TimerInterrupt)</li>
+	<li>[&nbsp]	Support dynamic interval timers on config page</li>
+	<li>[&nbsp] Support HTTP GET INTERRUPT COUNT with args</li>
+	<li>[&nbsp] Asynch NTP support</li>
+	<li>[&nbsp] More code comments</li>
+	<li>[&nbsp] Other?</li>
+</ul>
+<br>
+<h2>References</h2>
+<br>
+<a href="https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html" target="_blank">LittleFS</a> - Little File System<br>
+<a href="https://getbootstrap.com/docs/3.4/" target="_blank">BootStrap</a> - BootStrap(3.4.1) - HTML, CSS, and JS framework<br>
+<a href="https://jquery.com/" target="_blank">jQuery</a> - JS utility library<br>
+<a href="https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#arduino-ide" target="_blank">OTA with Arduino IDE</a> - How to setup and config IDE for OTA updates<br>
+<a href="https://randomnerdtutorials.com" target="_blank">Random Nerd Tutorials</a> - Lots of good information on ESP8266 here
+<br>
+<h2>Credits</h2>
+ 
+ Lots of great information and the webservices JS script in config.html is from <a href="https://github.com/forkineye/ESPixelStick" target="_blank">ESPixelStick</a>.
+
+</html>

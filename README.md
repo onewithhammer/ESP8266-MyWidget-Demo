@@ -140,7 +140,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
 - Implemented using embedded Bootstrap (3.4.1)
 - Implemented using embedded JQuery (3.5.1)
 
-## HTTP API - GET & POST
+## HTTP API - GET and POST
 
 - Asynchronous
 - HTTP GET FREE HEAP (TEXT)
@@ -346,14 +346,14 @@ This project has a interrupt timer used to flash the onboard LED.
 The original implementation used timer1
 
 Then I discovered [ESP8266TimerInterrupt](https://github.com/khoih-prog/ESP8266TimerInterrupt) which supports 16 ISR-based timers.
-- The interrupt timer is setup for 10 millisecond 
+- The main interrupt timer is setup for 10 millisecond interval
 
 	- One ISR-based timer is used to flash the onboard timer and increment counter
-		- interruptCount1 (changeable speed - freq)
+		- interruptCounter1 (changeable speed / freq)
 	- Second ISR-based timer is used to increment counter
-		- interruptCounter2 (fixed speed - freq)
+		- interruptCounter2 (fixed speed / freq)
 	- Third ISR-based timer is used to increment counter
-		- interruptCounter3 (fixed speed - freq)
+		- interruptCounter3 (fixed speed / freq)
 
 
 ## Test & Debug
