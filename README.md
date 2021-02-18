@@ -156,40 +156,56 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		- `freeHeap=38616`
 
 - HTTP GET INTERRUPT COUNT (TEXT)
-	- URL: `http://mywidget.local/intcount`
-	- Returns interrupt counter - interruptCounter1 variable
+	- URL: `http://mywidget.local/intcount + optional query string parameters`
+	- Returns interrupt counter(s) based on query string parameters, if no query string parameters, then intcount1
 	- Request:
-		- Name/Value Pair: N/A
+		- Query String Parameters: N/A
 	- Response:
-		- Interrupt Counter=[Interrupt Counter]
+		- `:intcount1=[Interrupt Counter]`
 	- Example Request:
 		- `http://mywidget.local/intcount`
 	- Example Response:
-		- `Interrupt Counter=4533456`
+		- `:intcount1=4533456`
+		
+	- Query string parameters (optional):
+	 - Request:
+		- 1=true, 2=true, 3=true 
+	- Response::
+		- Interrupt Counter(s) based on query string
+		- Name value pairs are delimited using colon ":".
+		- Name and value fields are delimited using a equal "=" sign.
+	- Example Request:
+		- `http://mywidget.local/intcount?1=true&2=true&3=true`
+	- Example Response:
+		- `:intcount1=4533456:intcount2=23236:intcount3=98434445`
+		- Example Request:
+		- `http://mywidget.local/intcount?3=true`
+	- Example Response:
+		- `:intcount3=98434445`
 
 - HTTP GET INTERRUPT COUNT2 (TEXT)
 	- URL: `http://mywidget.local/intcount2`
 	- Returns interrupt counter 2 - interruptCounter2 variable
 	- Request:
-		- Name/Value Pair: N/A
+		- Query String Parameters: N/A
 	- Response:
-		- Interrupt Counter2=[Interrupt Counter 2]
+		- `:intcount2=[Interrupt Counter 2]`
 	- Example Request:
 		- `http://mywidget.local/intcount2`
 	- Example Response:
-		- `Interrupt Counter2=23236`
+		- `:intcount2=23236`
 
 - HTTP GET INTERRUPT COUNT3 (TEXT)
 	- URL: `http://mywidget.local/intcount3`
 	- Returns interrupt counter 3 - interruptCounter3 variable
 	- Request:
-		- Name/Value Pair: N/A
+		- Query String Parameters: N/A
 	- Response:
-		- Interrupt Counter3=[Interrupt Counter 3]
+		- `:intcount3=[Interrupt Counter 3]`
 	- Example Request:
 		- `http://mywidget.local/intcount3`
 	- Example Response:
-		- `Interrupt Counter3=98434445`
+		- `:intcount3=98434445`
 	
 - HTTP GET STATUS (TEXT)
 	- URL: `http://mywidget.local/status + query string (name/value pairs)`
@@ -379,7 +395,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 
 - [X] Support multiple interrupt timers (ESP8266TimerInterrupt)
 - [ ]	Support dynamic interval timers on config page
-- [ ] Support HTTP GET INTERRUPT COUNT with args
+- [X] Support HTTP GET INTERRUPT COUNT with optional parameters
 - [ ] Asynch NTP support
 - [ ] More code comments
 - [ ] Other?

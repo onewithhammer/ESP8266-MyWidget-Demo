@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Version: 1.1.0
+Version: 1.1.1
 */
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -61,7 +61,6 @@ Version: 1.1.0
 const char* ssid = "YOUR-SSID";
 const char* password = "YOUR-SSID-PASSWORD";
 
-
 // Your MQTT broker address here
 #define MQTT_HOST IPAddress(192, 168, 0, 100)
 
@@ -70,7 +69,7 @@ const char* host = "mywidget";
 
 // global LED state
 bool ledState1 = 0;
-// global counter
+// global MQTT publish counter
 int counter = 1;
 
 // interrupt variables
@@ -78,6 +77,7 @@ volatile unsigned long interruptCounter1 = 0;
 volatile unsigned long interruptCounter2 = 0;
 volatile unsigned long interruptCounter3 = 0;
 
+// timer intervals
 unsigned long interruptInterval1 = INT_SLOW;
 unsigned long interruptInterval2 = INT_FAST;
 unsigned long interruptInterval3 = INT_FASTEST;
@@ -86,7 +86,6 @@ unsigned long interruptInterval3 = INT_FASTEST;
 int timer1_idx=0; // ledTimerISR()
 int timer2_idx=0; // counterTimer1ISR()
 int timer3_idx=0; // counterTimer2ISR()
-
 
 // init ESP8266 timer
 ESP8266Timer      ITimer;
@@ -417,6 +416,33 @@ void handleStatusJson(AsyncWebServerRequest* request)
   json += "}";
   request->send(200, "application/json", json);
 } // handleStatusJson()
+//
+// Based on args, return interrupt counters
+//
+void handleIntCounter(AsyncWebServerRequest* request)
+{
+  String buf;
+  Serial.println("GET intcount");
+
+  if(request->params() != 0) {
+    if (request->arg("1") == "true") {
+      Serial.println("intcount1");
+      buf += ":intcount1=" + String(interruptCounter1);
+    }
+    if (request->arg("2") == "true") {
+      Serial.println("intcount2");
+      buf += ":intcount2=" + String(interruptCounter2);
+    }
+    if (request->arg("3") == "true") {
+      Serial.println("intcount3");
+      buf += ":intcount3=" + String(interruptCounter3);
+    }
+    
+  } else {
+    buf += ":intcount1=" + String(interruptCounter1);
+  }
+  request->send(200, "text/plain", buf);
+} // handleIntCounter()
 
 void handleStatus(AsyncWebServerRequest* request)
 {
@@ -480,21 +506,19 @@ void initWeb() {
         Serial.println("GET heap");
         request->send(200, "text/plain", "freeHeap=" + String(ESP.getFreeHeap()));
   });
-
-  // get intcount (TEXT response)
+  // get intcount with optional parameters (TEXT response)
   webServer.on("/intcount", HTTP_GET, [](AsyncWebServerRequest *request) {
-        Serial.println("GET intcount");
-        request->send(200, "text/plain", "Interrupt Counter=" + String(interruptCounter1));
+       handleIntCounter(request);
   });
   // get intcount2 (TEXT response)
   webServer.on("/intcount2", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("GET intcount2");
-        request->send(200, "text/plain", "Interrupt Counter2=" + String(interruptCounter2));
+        request->send(200, "text/plain", ":intcount2=" + String(interruptCounter2));
   });
   // get intcount3 (TEXT response)
   webServer.on("/intcount3", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("GET intcount3");
-        request->send(200, "text/plain", "Interrupt Counter3=" + String(interruptCounter3));
+        request->send(200, "text/plain", ":intcount3=" + String(interruptCounter3));
   });
   // get status (TEXT response)
   webServer.on("/status", HTTP_GET, [](AsyncWebServerRequest* request) { 
@@ -504,7 +528,6 @@ void initWeb() {
   webServer.on("/status-json", HTTP_GET, [](AsyncWebServerRequest* request) { 
     handleStatusJson(request); 
   });
-
   // post counter (TEXT response)
   webServer.on("/counter", HTTP_POST, [](AsyncWebServerRequest *request){
         String message;

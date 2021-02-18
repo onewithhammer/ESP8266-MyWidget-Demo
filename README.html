@@ -207,25 +207,53 @@ Extract the folder in each of these zip files and place it in the "library" fold
 	<br>
 	<li>HTTP GET INTERRUPT COUNT (TEXT)</li>
 	<ul>
-		<li>URL: http://mywidget.local/intcount</li>
-		<li>Returns interrupt counter - interruptCounter1 variable</li>
+		<li>URL: http://mywidget.local/intcount + optional query string parameters</li>
+		<li>Returns interrupt counter(s) based on query string parameters, if no query string parameters, then intcount1</li>
 		<li>Request:</li>
 			<ul>
-				<li>Name/Value Pair: N/A</li>
+				<li>Query String Parameters (optional): N/A</li>
 			</ul>
 		<li>Response:</li>
 			<ul>
-				<li>Interrupt Counter=[Interrupt Counter]</li>
+				<li>:intcount1=[Interrupt Counter1]</li>
 			</ul>
-			<br>
 		<li>Example Request:</li>
 			<ul>
 				<li>http://mywidget.local/intcount</li>
 			</ul>
 		<li>Example Response:</li>
 			<ul>
-				<li>Interrupt Counter=4533456</li>
+				<li>:intcount=4533456</li>
 			</ul>
+		<li>Query string parameters (optional):</li>
+		<ul>
+				<li>Request:</li>
+				<ul>
+					<li>1=true, 2=true, 3=true</li>
+				</ul>
+			<li>Response:</li>
+			<ul>
+					<li>Interrupt Counter(s) based on query string</li>
+					<li>Name value pairs are delimited using colon ":".</li>
+					<li>Name and value fields are delimited using a equal "=" sign.</li>
+			</ul>
+			<li>Example Request:</li>
+			<ul>
+					<li>http://mywidget.local/intcount?1=true&2=true&3=true</li>
+			</ul>
+			<li>Example Response:</li>
+			<ul>
+					<li>:intcount1=4533456:intcount2=23236:intcount3=98434445</li>
+			</ul>
+			<li>Example Request:</li>
+			<ul>
+					<li>http://mywidget.local/intcount?3=true</li>
+			</ul>
+			<li>Example Response:</li>
+			<ul>
+					<li>:intcount3=98434445</li>
+			</ul>
+		</ul>
 	</ul>
 	<br>
 	<li>HTTP GET INTERRUPT COUNT2 (TEXT)</li>
@@ -234,11 +262,11 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		<li>Returns interrupt counter - interruptCounter2 variable</li>
 		<li>Request:</li>
 			<ul>
-				<li>Name/Value Pair: N/A</li>
+				<li>Query String Parameters: N/A</li>
 			</ul>
 		<li>Response:</li>
 			<ul>
-				<li>Interrupt Counter2=[Interrupt Counter 2]</li>
+				<li>:intcount2=[Interrupt Counter 2]</li>
 			</ul>
 			<br>
 		<li>Example Request:</li>
@@ -257,11 +285,11 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		<li>Returns interrupt counter - interruptCounter3 variable</li>
 		<li>Request:</li>
 			<ul>
-				<li>Name/Value Pair: N/A</li>
+				<li>Query String Parameters: N/A</li>
 			</ul>
 		<li>Response:</li>
 			<ul>
-				<li>Interrupt Counter=[Interrupt Counter 3]</li>
+				<li>:intcount3=[Interrupt Counter 3]</li>
 			</ul>
 			<br>
 		<li>Example Request:</li>
@@ -555,7 +583,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 <ul>
 	<li>[X] Support multiple interrupt timers (ESP8266TimerInterrupt)</li>
 	<li>[&nbsp]	Support dynamic interval timers on config page</li>
-	<li>[&nbsp] Support HTTP GET INTERRUPT COUNT with args</li>
+	<li>[X] Support HTTP GET INTERRUPT COUNT with optional parameters</li>
 	<li>[&nbsp] Asynch NTP support</li>
 	<li>[&nbsp] More code comments</li>
 	<li>[&nbsp] Other?</li>
