@@ -89,11 +89,12 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		</ul>
 		<br>
 		<ul>
-   		<li>Speed - Returns flash speed of onboard LED</li>
-			<li>Request: ''cmd:get:speed''</li>
-			<li>Response: ''cmd:get:speed:N''</li>
+   		<li>Speed - Returns timer speed of the interrupt handler</li>
+			<li>Request: ''cmd:get:speed:X''</li>
+			<li>Response: ''cmd:get:speed:X:N''</li>
 			<ul>
-				<li>where N is "1" to "4" representing representing flash speed of onboard LED</li>
+				<li>where X is the "1" to "3" representing the number of the interrupt handler</li>
+				<li>where N is "1" to "4" representing the speed of the interrupt timer</li>
 			</ul>
 		</ul>
 		<br>
@@ -120,11 +121,12 @@ Extract the folder in each of these zip files and place it in the "library" fold
 		</ul>
 		<br>
 		 <ul>
-  		<li>Speeds - Sets the flash speed of onboard LED</li>
-			<li>Request: ''cmd:set:speed''</li>
-			<li>Response: ''cmd:set:speed:N''</li>
+  		<li>Speeds - Sets the timer speed of interrupt handler</li>
+			<li>Request: ''cmd:set:speed:X:N''</li>
+			<li>Response: ''cmd:set:speed:X:N''</li>
 			<ul>
-				<li>where N is "1" to "4" representing the flash speed of onboard LED</li>
+				<li>where X is the "1" to "3" representing the number of the interrupt handler</li>
+				<li>where N is "1" to "4" representing the speed of the interrupt timer</li>
 			</ul>
 		</ul>
 		<br>
@@ -582,7 +584,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 <br>
 <ul>
 	<li>[X] Support multiple interrupt timers (ESP8266TimerInterrupt)</li>
-	<li>[&nbsp]	Support dynamic interval timers on config page</li>
+	<li>[X]	Support dynamic interval timers on config page</li>
 	<li>[X] Support HTTP GET INTERRUPT COUNT with optional parameters</li>
 	<li>[&nbsp] Asynch NTP support</li>
 	<li>[&nbsp] More code comments</li>

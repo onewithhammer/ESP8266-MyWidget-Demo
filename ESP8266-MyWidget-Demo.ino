@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Version: 1.1.1
+Version: 1.1.2
 */
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -140,7 +140,7 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
       buffer[len] = 0;
       Serial.printf("Handle WS: %s - len: %d\n", buffer, len);
 
-      char * token = strtok(buffer, ":");
+      char *token = strtok(buffer, ":");
     
       if(!strcmp("cmd", token)) {
          // Serial.println("cmd");
@@ -158,18 +158,42 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
             // status
             client->text("cmd:get:status:" + String(ledState1));
            } else if (!strcmp("speed", token)) {
-            String speed;
-            // speed
-            if(interruptInterval1 == INT_SLOW)
-              speed = "1";
-            else if(interruptInterval1 == INT_MED)
-              speed = "2";
-            else if(interruptInterval1 == INT_FAST)
-              speed = "3";
-            else if(interruptInterval1 == INT_FASTEST)
-              speed = "4";
-          
-            client->text("cmd:get:speed:" + String(speed));
+            String speed = "1";
+            // speed - cmd:get:speed:interrupt:speed
+            char *intNum = strtok(NULL, ":");
+            Serial.println("interrupt:" + String(intNum));
+            if(intNum[0] == '1') {
+              // interrupt - 1
+              if(interruptInterval1 == INT_SLOW)
+                speed = "1";
+              else if(interruptInterval1 == INT_MED)
+                speed = "2";
+              else if(interruptInterval1 == INT_FAST)
+                speed = "3";
+              else if(interruptInterval1 == INT_FASTEST)
+                speed = "4";
+            } else if(intNum[0] == '2') {
+               // interrupt - 2
+              if(interruptInterval2 == INT_SLOW)
+                speed = "1";
+              else if(interruptInterval2 == INT_MED)
+                speed = "2";
+              else if(interruptInterval2 == INT_FAST)
+                speed = "3";
+              else if(interruptInterval2 == INT_FASTEST)
+                speed = "4";
+            } else if(intNum[0] == '3') {
+               // interrupt - 3
+              if(interruptInterval3 == INT_SLOW)
+                speed = "1";
+              else if(interruptInterval3 == INT_MED)
+                speed = "2";
+              else if(interruptInterval3 == INT_FAST)
+                speed = "3";
+              else if(interruptInterval3 == INT_FASTEST)
+                speed = "4";
+            }
+            client->text("cmd:get:speed:" + String(intNum) + ":" + String(speed));
           } else if (!strcmp("config", token)) {
             // config
             String fileData;
@@ -197,10 +221,14 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
             ledState1 = !ledState1;           
             client->text("cmd:set:toggle:" + String(ledState1));
           } else if (!strcmp("speed", token)) {
-            unsigned long tmpSpeed;          
-            // speed 
+            // default to slow
+            unsigned long tmpSpeed = INT_SLOW;       
+            // speed - cmd:set:speed:interrupt:speed
+            char *intNum = strtok(NULL, ":");
+            Serial.println("interrupt:" + String(intNum));
             char *speed = strtok(NULL, ":");
-            Serial.println(speed);
+            Serial.println("speed:" + String(speed));
+
             if(strlen(speed) == 1) {
               if(speed[0] == '1')
                 tmpSpeed = INT_SLOW;
@@ -210,14 +238,30 @@ void handleWebSocketMessage(AsyncWebSocket *server, AsyncWebSocketClient *client
                 tmpSpeed = INT_FAST; 
               else if (speed[0] == '4')
                 tmpSpeed = INT_FASTEST;
-
+            }
+            if(intNum[0] == '1') {
+              // interrupt - 1
               if(tmpSpeed != interruptInterval1) {
                 interruptInterval1 = tmpSpeed;
-                // update the interval for ledTimerISR
+                // update the interval 
                 ISR_Timer.changeInterval(timer1_idx, interruptInterval1);
               }
+            } else if(intNum[0] == '2') {
+                // interrupt - 2
+                if(tmpSpeed != interruptInterval2) {
+                  interruptInterval2 = tmpSpeed;
+                  // update the interval 
+                  ISR_Timer.changeInterval(timer2_idx, interruptInterval2);
+                }
+            } else if(intNum[0] == '3') {
+                // interrupt - 3
+                if(tmpSpeed != interruptInterval2) {
+                  interruptInterval3 = tmpSpeed;
+                  // update the interval 
+                  ISR_Timer.changeInterval(timer3_idx, interruptInterval3);
+                }
             }
-            client->text("cmd:set:speed:" + String(speed));
+            client->text("cmd:set:speed:" + String(intNum) + ":" + String(speed));
           } else if (!strcmp("config", token)) {
             String(buf);
             // config

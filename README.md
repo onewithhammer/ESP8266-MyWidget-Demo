@@ -84,10 +84,11 @@ Extract the folder in each of these zip files and place it in the "library" fold
     - Response: ''cmd:get:status:N''
       - where N is "0" or "1" representing "OFF" or "ON" of light
 
-  - Speed - Returns flash speed of onboard LED
-    - Request: ''cmd:get:speed''
-    - Response: ''cmd:get:speed:N''
-      - where N is "1" to "4" representing flash speed of onboard LED
+  - Speed - Returns timer speed of interrupt handler
+    - Request: ''cmd:get:speed:X''
+    - Response: ''cmd:get:speed:X:N''
+      - where X is the "1" to "3" representing the number of the interrupt handler
+      - where N is "1" to "4" representing speed of the interrupt timer
 
   - Config - Returns current configuration parameters. Read from /cfg.txt file.
     - Request: ''cmd:get:config''
@@ -101,10 +102,11 @@ Extract the folder in each of these zip files and place it in the "library" fold
       - Response: ''cmd:set:toggle:N''
         - where N is "0" or "1" representing "OFF" or "ON" of light
 
-    - Speed - Sets the flash speed of onboard LED
-      - Request: ''cmd:set:speed''
-      - Response: ''cmd:set:speed:N''
-        - where N is "1" to "4" representing flash speed of onboard LED
+    - Speed - Sets the timer speed of interrupt handler
+      - Request: ''cmd:set:speed:X:N''
+      - Response: ''cmd:set:speed:X:N''
+        - where X is the "1" to "3" representing the number of the interrupt handler
+        - where N is "1" to "4" representing speed of the interrupt timer
 
     - Config - Sets current configuration parameters. Saved to /cfg.txt file.
       - Request: ''cmd:set:config:config:channels:ports:user1:user2''
@@ -170,7 +172,7 @@ Extract the folder in each of these zip files and place it in the "library" fold
   - Query string parameters (optional):
   - Request:
     - 1=true, 2=true, 3=true
-  - Response::
+  - Response:
     - Interrupt Counter(s) based on query string
     - Name value pairs are delimited using colon ":".
     - Name and value fields are delimited using a equal "=" sign.
@@ -394,7 +396,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 ## Future Enhancements
 
 - [X] Support multiple interrupt timers (ESP8266TimerInterrupt)
-- [ ] Support dynamic interval timers on config page
+- [X] Support dynamic interval timers on config page
 - [X] Support HTTP GET INTERRUPT COUNT with optional parameters
 - [ ] Asynch NTP support
 - [ ] More code comments

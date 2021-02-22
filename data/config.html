@@ -27,7 +27,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">MyWidget ESP8266 Demo</a>
+            <a class="navbar-brand" href="#">MyWidget ESP8266</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -92,13 +92,31 @@
           </div> <!-- col -->
           <div class="col-md-4">
             <div class="panel panel-primary">
-              <div class="panel-heading">LED Flash Speed</div>
+              <div class="panel-heading">Interrupt Speed</div>
               <div class="panel-body">
                 <form class="form-horizontal">
                   <div class="form-group">
-                    <label for="speed" class="col-sm-5 control-label">Select:</label>
+                    <label for="speed1" class="col-sm-5 control-label">Interrupt 1:</label>
                     <div class="col-sm-6">
-                      <select id="speed" class="form-control">
+                      <select id="speed1" class="form-control">
+                        <option value="1">Slow</option>
+                        <option value="2">Medium</option>
+                        <option value="3">Fast</option>
+                        <option value="4">Fastest</option>
+                      </select>
+                    </div>
+                    <label for="speed3" class="col-sm-5 control-label">Interrupt 2:</label>
+                    <div class="col-sm-6">
+                      <select id="speed2" class="form-control">
+                        <option value="1">Slow</option>
+                        <option value="2">Medium</option>
+                        <option value="3">Fast</option>
+                        <option value="4">Fastest</option>
+                      </select>
+                    </div>
+                    <label for="speed3" class="col-sm-5 control-label">Interrupt 3:</label>
+                    <div class="col-sm-6">
+                      <select id="speed3" class="form-control">
                         <option value="1">Slow</option>
                         <option value="2">Medium</option>
                         <option value="3">Fast</option>
@@ -134,7 +152,9 @@ function onLoad(event) {
 function initListeners() {
   document.getElementById('toggle').addEventListener('click', toggle);
   document.getElementById('configSave').addEventListener('click', configSave);
-  document.getElementById('speed').addEventListener('change', speedChange);
+  document.getElementById('speed1').addEventListener('change', speedChange1);
+  document.getElementById('speed2').addEventListener('change', speedChange2);
+  document.getElementById('speed3').addEventListener('change', speedChange3);
 }
 function toggle() {
   wsEnqueue("cmd:set:toggle");
@@ -148,18 +168,23 @@ function configSave() {
     + document.getElementById('user1').value + ":"
     + document.getElementById('user2').value);               
 }
-function speedChange() {
-  console.info("speedChange");
-  wsEnqueue("cmd:set:speed:" + document.getElementById('speed').value);
+function speedChange1() {
+  console.info("speedChange1");
+  wsEnqueue("cmd:set:speed:1:" + document.getElementById('speed1').value);
 }
-function RequestUptime()
-{
+function speedChange2() {
+  console.info("speedChange2");
+  wsEnqueue("cmd:set:speed:2:" + document.getElementById('speed2').value);
+}
+function speedChange3() {
+  console.info("speedChange3");
+  wsEnqueue("cmd:set:speed:3:" + document.getElementById('speed3').value);
+}
+function RequestUptime() {
     // is the timer running?
-    if (null === UptimeRequestTimer)
-    {
+    if (null === UptimeRequestTimer) {
         // timer runs forever
-        UptimeRequestTimer = setTimeout(function ()
-        {
+        UptimeRequestTimer = setTimeout(function () {
             clearTimeout(UptimeRequestTimer);
             UptimeRequestTimer = null;
 
@@ -173,18 +198,14 @@ function RequestUptime()
 
 } // RequestUptime
 
-function ParseParameter(name)
-{
+function ParseParameter(name) {
     return (location.search.split(name + '=')[1] || '').split('&')[0];
 } // ParseParameter
 
 // On websocket connect
-function wsConnect()
-{
-    if ('WebSocket' in window)
-    {
-        if (!(target = ParseParameter('target')))
-        {
+function wsConnect() {
+    if ('WebSocket' in window) {
+        if (!(target = ParseParameter('target'))) {
             target = document.location.host;
         }
 
@@ -196,8 +217,7 @@ function wsConnect()
 
         // When connection is opened, get core data.
         // Module data is loaded in module change / load callbacks
-        ws.onopen = function ()
-        {
+        ws.onopen = function () {
             console.info("ws.onopen");
 
             // throw away any old messages
@@ -211,8 +231,10 @@ function wsConnect()
             wsEnqueue("cmd:get:status");
             // ask for config
             wsEnqueue("cmd:get:config");
-            // ask for speed
-            wsEnqueue("cmd:get:speed");
+            // ask for speed of 3 interrupts
+            wsEnqueue("cmd:get:speed:1");
+            wsEnqueue("cmd:get:speed:2");
+            wsEnqueue("cmd:get:speed:3");
             // start uptime loop
             RequestUptime();
         };
@@ -257,9 +279,16 @@ function wsConnect()
                   }
                   document.getElementById('state1').innerHTML = state1;
                 } else if (splits[2] == "speed") {
-                  // cmd:get:speed:X
-                  console.info("speed: " + splits[3]);
-                  document.getElementById('speed').value = splits[3];
+                  // cmd:get:speed:X:N
+                  console.info("interrupt: " + splits[3]);
+                  console.info("speed: " + splits[4]);
+                  if(splits[3] == "1") {
+                    document.getElementById('speed1').value = splits[4];
+                  } else if (splits[3] == "2") {
+                    document.getElementById('speed2').value = splits[4];
+                  } else if (splits[3] == "3") {
+                    document.getElementById('speed3').value = splits[4];
+                  }
                 } else if (splits[2] == "config") {
                   // cmd:get:config:channels:ports:user1:user2
 
@@ -278,7 +307,7 @@ function wsConnect()
               } else if((splits[0] =="cmd") && (splits[1] == "set")) {
 
                 if (splits[2] == "toggle") {
-                  // cmd:get:toggle:state1
+                  // cmd:set:toggle:state1
                   console.info("state1: " + splits[3]);
 
                   if (splits[3] == "1") {
@@ -288,10 +317,16 @@ function wsConnect()
                   }
                   document.getElementById('state1').innerHTML = state1;
                 } else if (splits[2] == "speed") {
-                  // cmd:get:speed:X
-                  console.info("speed: " + splits[3]);
-
-                  document.getElementById('speed').value = splits[3];
+                  // cmd:set:speed:X:N
+                  console.info("interrupt: " + splits[3]);
+                  console.info("speed: " + splits[4]);
+                  if(splits[3] == "1") {
+                    document.getElementById('speed1').value = splits[4];
+                  } else if (splits[3] == "2") {
+                    document.getElementById('speed2').value = splits[4];
+                  } else if (splits[3] == "3") {
+                    document.getElementById('speed3').value = splits[4];
+                  }
                 } else if (splits[2] == "config") {
                   // cmd:set:config:channels:ports:user1:user2
 
@@ -321,38 +356,28 @@ function wsConnect()
             //console.info("ws.onmessage: Done");
         }; // onmessage
 
-        ws.onclose = function ()
-        {
+        ws.onclose = function () {
             wsFlushAndHaltTheOutputQueue();
             wsConnect();
         };
-    }
-    else
-    {
+    } else {
         alert('WebSockets is NOT supported by your Browser! You will need to upgrade your browser.');
     }
 } // wsConnect
 // Websocket message queue handler
-function wsEnqueue(message)
-{
+function wsEnqueue(message) {
     // only send messages if the WS interface is up
-    if (ws.readyState !== 1)
-    {
+    if (ws.readyState !== 1) {
         console.info("WS is down. Discarding msg: " + message);
-    }
-    else
-    {
+    } else {
         wsOutputQueue.push(message);
         wsProcessOutputQueue();
-
     } // WS is up
 } // wsEnqueue
 
-function wsFlushAndHaltTheOutputQueue()
-{
+function wsFlushAndHaltTheOutputQueue() {
     // do we have a send timer running?
-    if (null !== wsOutputQueueTimer)
-    {
+    if (null !== wsOutputQueueTimer) {
         // stop the timer
         clearTimeout(wsOutputQueueTimer);
         wsOutputQueueTimer = null;
@@ -362,34 +387,25 @@ function wsFlushAndHaltTheOutputQueue()
     wsBusy = true;
 
     // empty the output queue
-    while (wsOutputQueue.length > 0)
-    {
+    while (wsOutputQueue.length > 0) {
         //get the next message from the queue.
         var message = wsOutputQueue.shift();
         console.info("Discarding msg: " + message);
     }
 } // wsFlushAndHaltTheOutputQueue
 
-function wsProcessOutputQueue()
-{
+function wsProcessOutputQueue() {
     //console.log('wsProcessOutputQueue');
 
     // only send messages if the WS interface is up
-    if (ws.readyState !== 1)
-    {
+    if (ws.readyState !== 1) {
         // The interface is NOT up. Flush the queue
         console.log('wsProcessOutputQueue: WS Down. Flush');
         wsFlushAndHaltTheOutputQueue();
-    }
-
-    //check if we are currently waiting for a response
-    else if (wsBusy === true)
-    {
-        console.log('wsProcessOutputQueue: Busy');
-    } // cant send yet
-
-    else if (wsOutputQueue.length > 0)
-    {
+    } else if (wsBusy === true) {
+      //check if we are currently waiting for a response
+      console.log('wsProcessOutputQueue: Busy');
+    } else if (wsOutputQueue.length > 0) {
         //set the wsBusy flag indicating that we are waiting for a response
         wsBusy = true;
 
@@ -400,10 +416,8 @@ function wsProcessOutputQueue()
         // isn't recieved.
         var WaitForResponseTimeMS = 5000; // 5 seconds
 
-
         // set up a new timer
-        wsOutputQueueTimer = setTimeout(function ()
-        {
+        wsOutputQueueTimer = setTimeout(function () {
             // console.info('WS Send Timer expired');
 
             // Move on to the next message
@@ -419,11 +433,9 @@ function wsProcessOutputQueue()
 
 } // wsProcessOutputQueue
 
-function wsReadyToSend()
-{
+function wsReadyToSend() {
     // is a timer running?
-    if (null !== wsOutputQueueTimer)
-    {
+    if (null !== wsOutputQueueTimer) {
         // stop the timer
         clearTimeout(wsOutputQueueTimer);
         wsOutputQueueTimer = null;
