@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Version: 1.1.2
+Version: 1.1.3
 */
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -544,7 +544,7 @@ void handleStatus(AsyncWebServerRequest* request)
 void initWeb() {
   webSocket.onEvent(onEvent);
   webServer.addHandler(&webSocket);
-
+  
   // get heap (TEXT response)
   webServer.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("GET heap");
@@ -587,14 +587,16 @@ void initWeb() {
         } 
         request->send(200, "text/plain", "POST: Counter set to: " + String(i));
     });
-
+  // page not found message
   webServer.onNotFound([](AsyncWebServerRequest *request) {
         request->send(404, "text/plain", "Page not found");
   });
-
   // default to index page
   webServer.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
-
+  // serve up image
+  webServer.on("/cplusplus", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/cplusplus.png", "image/png");
+  });
   webServer.begin();
   Serial.println("WebServer Started");
 } // initWeb()

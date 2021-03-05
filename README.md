@@ -18,11 +18,12 @@ This project includes:
 - Asynchronous MQTT (PangolinMQTT)
 - LittleFS File System
 - Embedded Bootstrap (3.4.1)
-- Embedded jquery (3.5.1)
+- Embedded jQuery (3.5.1)
+- Embedded html, css, JS and Images
 - Save/Load Config File (text)
 - OTA (Over the Air) Updates
 - HTTP API Supports HTTP GET/POST
-- Auto Updating Web Site (Web Services using JS)
+- Dynamically Updating Web Site (Web Services using JS)
 - Multiple Interrupt Timers (ESP8266TimerInterrupt)
 - Flash Onboard LED Using Interrupt Timer
 - Plus much more...
@@ -116,7 +117,8 @@ Extract the folder in each of these zip files and place it in the "library" fold
 ## Web Server
 
 - Asynchronous
-- Supports serving html, css, js files
+- Supports serving embedded html, css, js files
+- Supports serving embedded images
 - Sets default to index.html
 - Serves two embedded web pages (index.html & config.html)
 - Supports file not found message
@@ -322,6 +324,7 @@ Here is the directory and files associated with this project.
   cfg.txt (config file - text format)
   index.html (index file - HTML page)
   config.html (config file - HTML page)
+  cplusplus.png (image file)
 
 If you modify a file locally, you must upload to device using [Arduino ESP8266 LittleFS Filesystem Uploader](https://github.com/esp8266/arduino-esp8266fs-plugin)
 
@@ -398,6 +401,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 - [X] Support multiple interrupt timers (ESP8266TimerInterrupt)
 - [X] Support dynamic interval timers on config page
 - [X] Support HTTP GET INTERRUPT COUNT with optional parameters
+- [X] Embedded image support
 - [ ] Asynch NTP support
 - [ ] More code comments
 - [ ] Other?
@@ -408,7 +412,7 @@ Later I went back and added an HTTP GET with JSON response example without any J
 - [BootStrap](https://getbootstrap.com/docs/3.4/) - BootStrap(3.4.1) - HTML, CSS, and JS framework
 - [jQuery](https://jquery.com/) - JS utility library
 - [OTA with Arduino IDE](https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#arduino-ide) - How to setup and config IDE for OTA updates
-- [Random Nerd Tutorials](https://randomnerdtutorials.com/) - Lots of good information on ESP8266 here
+- [Random Nerd Tutorials](https://randomnerdtutorials.com/) - Lots of good information on ESP8266 projects here
 
 ## Credits
 
