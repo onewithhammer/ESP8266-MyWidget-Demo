@@ -18,22 +18,17 @@
 
     <div class="container">
       <!-- Static navbar -->
-      <nav class="navbar navbar-default">
+      <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="#">MyWidget ESP8266</a>
-          </div>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
           <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-              <li><a href="index.html">Home</a></li>
-              <li class="active"><a href="#">Config</a></li>
-              <li><a href="#">Contact</a></li>
+            <ul class="navbar-nav">
+              <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+              <li class="nav-item active"><a class="nav-link" href="#">Config</a></li>
+              <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -42,45 +37,45 @@
       <div class="container">
         <div class="row">
           <div class="col-md-4">
-            <div class="panel panel-primary">
-              <div class="panel-heading">Light Output</div>
-              <div class="panel-body">
+            <div class="card border-primary">
+              <div class="card-header bg-primary text-white">Light Output</div>
+              <div class="card-body">
                 <center><strong>State1:</strong> <span id="state1">Updating...</span></center>
                 <p><center><button id="toggle" class="btn btn-primary">Toggle</button></center></p>
               </div>
-            </div> <!-- panel -->
-            <div class="panel panel-primary">
-              <div class="panel-heading">Image</div>
-              <div class="panel-body">
+            </div> <!-- card -->
+            <div class="card border-primary">
+              <div class="card-header bg-primary text-white">Image</div>
+              <div class="card-body">
                 <center><img src="cplusplus" alt="C++ image" width="185" height="185"></center>
               </div>            
-            </div> <!-- panel -->
+            </div> <!-- card -->
           </div> <!-- col -->
           <div class="col-md-4">
-            <div class="panel panel-primary">
-              <div class="panel-heading">Device Configuration</div>
-              <div class="panel-body">
-                <form class="form-horizontal">
-                  <div class="form-group">
-                    <label for="channels" class="col-sm-5 control-label">Channels:</label>
+            <div class="card border-primary">
+              <div class="card-header bg-primary text-white">Device Configuration</div>
+              <div class="card-body">
+                <form class="row">
+                  <div class="row mb-3">
+                    <label for="channels" class="col-sm-5 col-form-label">Channels:</label>
                     <div class="col-sm-6">
                       <input type="number" class="form-control" id="channels" min="1" max="512">
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="ports" class="col-sm-5 control-label">Ports:</label>
+                  <div class="row mb-3">
+                    <label for="ports" class="col-sm-5 col-form-label">Ports:</label>
                     <div class="col-sm-6">
                       <input type="number" class="form-control" id="ports" min="1" max="16">
                     </div>
                   </div> 
-                  <div class="form-group">
-                    <label for="user1" class="col-sm-5 control-label">User Data 1:</label>
+                  <div class="row mb-3">
+                    <label for="user1" class="col-sm-5 col-form-label">User Data 1:</label>
                     <div class="col-sm-6">
                       <input type="text" class="form-control" id="user1" minlength="0" maxlength="16">
                     </div>
                   </div> 
-                  <div class="form-group">
-                    <label for="user2" class="col-sm-5 control-label">User Data 2:</label>
+                  <div class="row mb-3">
+                    <label for="user2" class="col-sm-5 col-form-label">User Data 2:</label>
                     <div class="col-sm-6">
                       <input type="text" class="form-control" id="user2" minlength="0" maxlength="16">
                     </div>
@@ -89,20 +84,20 @@
                 <p><center><button id="configSave" class="btn btn-primary">Save Changes</button></center></p>
               </div>
             </div>
-            <div class="panel panel-primary">
-              <div class="panel-heading">Device Uptime</div>
-              <div class="panel-body">
+            <div class="card border-primary">
+              <div class="card-header bg-primary text-white">Device Uptime</div>
+              <div class="card-body">
                 <center><span id="uptime">Updating...</span></center>
               </div>            
-            </div> <!-- panel -->
+            </div> <!-- card -->
           </div> <!-- col -->
           <div class="col-md-4">
-            <div class="panel panel-primary">
-              <div class="panel-heading">Interrupt Speed</div>
-              <div class="panel-body">
-                <form class="form-horizontal">
-                  <div class="form-group">
-                    <label for="speed1" class="col-sm-5 control-label">Interrupt 1:</label>
+            <div class="card border-primary">
+              <div class="card-header bg-primary text-white">Interrupt Speed</div>
+              <div class="card-body">
+                <form class="row">
+                  <div class="row mb-3">
+                    <label for="speed1" class="col-sm-5 col-form-label">Interrupt 1:</label>
                     <div class="col-sm-6">
                       <select id="speed1" class="form-control">
                         <option value="1">Slow</option>
@@ -111,7 +106,7 @@
                         <option value="4">Fastest</option>
                       </select>
                     </div>
-                    <label for="speed3" class="col-sm-5 control-label">Interrupt 2:</label>
+                    <label for="speed3" class="col-sm-5 col-form-label">Interrupt 2:</label>
                     <div class="col-sm-6">
                       <select id="speed2" class="form-control">
                         <option value="1">Slow</option>
@@ -120,7 +115,7 @@
                         <option value="4">Fastest</option>
                       </select>
                     </div>
-                    <label for="speed3" class="col-sm-5 control-label">Interrupt 3:</label>
+                    <label for="speed3" class="col-sm-5 col-form-label">Interrupt 3:</label>
                     <div class="col-sm-6">
                       <select id="speed3" class="form-control">
                         <option value="1">Slow</option>
@@ -132,7 +127,7 @@
                   </div>
                 </form>
               </div>
-            </div> <!-- panel -->
+            </div> <!-- card -->
           </div> <!-- col -->
         </div> <!-- row -->
       </div> <!-- /container -->

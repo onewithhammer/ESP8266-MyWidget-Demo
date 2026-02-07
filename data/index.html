@@ -18,31 +18,26 @@
 
     <div class="container">
       <!-- Static navbar -->
-      <nav class="navbar navbar-default">
+      <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="#">MyWidget ESP8266</a>
-          </div>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
           <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="config.html">Config</a></li>
-              <li><a href="#">Contact</a></li>
+            <ul class="navbar-nav">
+              <li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
+              <li class="nav-item"><a class="nav-link" href="config.html">Config</a></li>
+              <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </nav>
       <div class="container">
         <div class="row">
-          <div class="panel panel-primary">
-            <div class="panel-heading">This Demo Features</div>
-            <div class="panel-body">
+          <div class="card border-primary">
+            <div class="card-header bg-primary text-white">This Demo Features</div>
+            <div class="card-body">
               <ul class="list-group">
                 <strong>
                 <li class="list-group-item">
@@ -64,7 +59,7 @@
                   LittleFS File System
                 </li>
                 <li class="list-group-item">
-                  Embedded Bootstrap (3.4.1)
+                  Embedded Bootstrap (5.3.8)
                 </li>
                 <li class="list-group-item">
                   Embedded html, css, JS and Images
