@@ -10,8 +10,8 @@ This project can be used as a framework, learning tool or as a template for star
 - Async Web Services (ESPAsyncWebServer)
 - Async MQTT (PangolinMQTT)
 - LittleFS File System
-- Embedded Bootstrap (3.4.1)
-- Embedded jQuery (3.5.1)
+- Embedded Bootstrap (5.3.8)
+- Embedded jQuery (4.0.0)
 - Embedded HTML, CSS, JS and Images
 - Save/Load Config File (text)
 - OTA (Over the Air) Updates
@@ -25,6 +25,10 @@ This project can be used as a framework, learning tool or as a template for star
 
 - WeMos D1 Mini (ESP8266)
 
+## Version
+
+2.0.0
+
 ## Dependencies
 
 | Library | Version |
@@ -33,6 +37,8 @@ This project can be used as a framework, learning tool or as a template for star
 | [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) | ^1.2.3 |
 | [PangolinMQTT](https://github.com/philbowles/PangolinMQTT) | v1.0.0 |
 | [ESP8266TimerInterrupt](https://github.com/khoih-prog/ESP8266TimerInterrupt) | latest |
+| [Bootstrap](https://getbootstrap.com/) | 5.3.8 |
+| [jQuery](https://jquery.com/) | 4.0.0 |
 
 ## Getting Started
 
